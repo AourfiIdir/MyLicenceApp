@@ -201,7 +201,7 @@ export default function Quiz() {
               <TouchableOpacity
                 key={i}
                 style={buttonStyle}
-                disabled={answered}
+                //disabled={answered}
                 onPress={() => handleAnswer(a.correct, i)}
               >
                 <Text style={buttonTextStyle}>{a.text}</Text>

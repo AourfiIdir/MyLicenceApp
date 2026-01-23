@@ -2,7 +2,7 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  ScrollView, 
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
@@ -15,7 +15,7 @@ export default function Home() {
         {/* Header */}
         <View style={styles.header}>
           <Ionicons name="car" size={50} color="#007AFF" />
-          <Text style={styles.mainTitle}>Driver Licence</Text>
+          <Text style={styles.mainTitle}>Driver  ²</Text>
           <Text style={styles.subtitle}>Learning App</Text>
         </View>
 
