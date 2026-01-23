@@ -3,8 +3,8 @@ import { Stack } from "expo-router";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useColorScheme } from "react-native";
 import { ActivityIndicator, View } from "react-native";
-
 import * as SecureStore from "expo-secure-store";
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [isLoggedIn, setIsLoggedIn] = useState(null);
@@ -15,13 +15,11 @@ export default function RootLayout() {
 
   const checkUserStatus = async () => {
     try {
-      // TODO: Check if user token exists in storage
       const userToken = await SecureStore.getItemAsync("userToken");
+      
       if (userToken) {
-        // Token found → User is logged in
         setIsLoggedIn(true);
       } else {
-        // No token → User is not logged in
         setIsLoggedIn(false);
       }
     } catch (error) {
@@ -44,7 +42,7 @@ export default function RootLayout() {
         {isLoggedIn ? (
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         ) : (
-          <Stack.Screen name="(login)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         )}
       </Stack>
     </ThemeProvider>

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
+import Card from "../../components/Card";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Home() {
@@ -18,7 +19,32 @@ export default function Home() {
           <Text style={styles.mainTitle}>Driver  ²</Text>
           <Text style={styles.subtitle}>Learning App</Text>
         </View>
-
+        <Card
+          name="book"
+          description="Understanding who has the right of way on the road"
+          category="Priority"
+          type="learning"
+          content={{
+            sections: [
+              {
+                title: "Right of Way",
+                content: "Vehicles coming from the right have priority unless signs indicate otherwise. Always check both directions before proceeding."
+              },
+              {
+                title: "Roundabouts",
+                content: "Vehicles already in the roundabout have priority over entering vehicles. Signal your exit and yield to traffic."
+              },
+              {
+                title: "Emergency Vehicles",
+                content: "Always give way to emergency vehicles with sirens and lights. Pull over safely and let them pass."
+              },
+              {
+                title: "Pedestrian Crossings",
+                content: "Pedestrians always have priority at marked crossings. Stop completely and wait for them to cross safely."
+              }
+            ]
+          }}
+        />
         {/* Welcome Section */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Welcome! 👋</Text>

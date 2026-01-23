@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useRouter } from "expo-router";
-import { Link, View, TouchableOpacity, Text, StyleSheet, TextInput, Alert } from "react-native";
+import { useRouter, Link } from "expo-router";
+import { View, TouchableOpacity, Text, StyleSheet, TextInput, Alert } from "react-native";
 import * as SecureStore from "expo-secure-store";
 
 const API = "http://192.168.1.182:3000";
@@ -30,7 +30,6 @@ export default function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      // ✅ Use SecureStore instead of AsyncStorage
       await SecureStore.setItemAsync("userToken", data.token);
       await SecureStore.setItemAsync("refreshToken", data.refreshToken);
       await SecureStore.setItemAsync("userEmail", email);
@@ -80,7 +79,7 @@ export default function Login() {
         <Text style={styles.signUpText}>Dont have an account? </Text>
         <Link href="/(login)/signin" asChild>
           <TouchableOpacity>
-            <Text style={styles.signUpLinkText}>Sign In</Text>
+            <Text style={styles.signUpLinkText}>Sign Up</Text>
           </TouchableOpacity>
         </Link>
       </View>
@@ -139,6 +138,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#007AFF",
     fontWeight: "bold",
-    marginLeft: 5,
   },
 });
