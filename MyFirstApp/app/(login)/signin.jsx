@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "expo-router";
+import {API } from "../../constants/vars";
 import {
   View,
   Text,
@@ -10,7 +11,6 @@ import {
   ScrollView,
 } from "react-native";
 
-const API = "http://192.168.1.182:3000"; // ← your backend URL
 
 const initialForm = {
   nom: "",

@@ -1,58 +1,55 @@
 import { useState } from "react";
 import { useRouter, Link } from "expo-router";
 import { View, TouchableOpacity, Text, StyleSheet, TextInput, Alert } from "react-native";
-import * as SecureStore from "expo-secure-store";
-
-const API = "http://192.168.1.182:3000";
+import { useAuth } from "../../contexts/AuthContext";
+import {API} from "../../constants/vars";
 
 export default function Login() {
   const router = useRouter();
+  const { login } = useAuth();
   
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please enter email and password");
+    if (!username || !password) {
+      Alert.alert("Error", "Please enter username and password");
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await fetch(`${API}/auth/login`, {
+      const res = await fetch(`${API}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      await SecureStore.setItemAsync("userToken", data.token);
-      await SecureStore.setItemAsync("refreshToken", data.refreshToken);
-      await SecureStore.setItemAsync("userEmail", email);
-
+      await login(data.token, data.refreshToken);
       Alert.alert("Success", "Logged in");
-      router.replace("(tabs)");
+      
     } catch (error) {
-      Alert.alert("Login Failed", error.message || "Invalid email or password");
+      Alert.alert("Login Failed", error.message || "Invalid username or password");
     } finally {
       setLoading(false);
     }
   };
 
+  // ...existing code...
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         editable={!loading}
       />
 
@@ -86,6 +83,8 @@ export default function Login() {
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {

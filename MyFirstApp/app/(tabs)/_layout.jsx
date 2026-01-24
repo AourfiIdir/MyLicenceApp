@@ -1,50 +1,64 @@
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Tabs } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function TabsLayout() {
+export default function TabLayout() {
   return (
     <Tabs
-    screenOptions={{
-        headerShown: false, // 🔥 hides header for ALL tab screens
-      }}>
+      screenOptions={{
+        tabBarActiveTintColor: '#FF6B35',
+        tabBarInactiveTintColor: '#999',
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: '#FFF',
+          borderTopWidth: 3,
+          borderTopColor: '#000',
+          height: 60,
+          paddingBottom: 8,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
+          title: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" color={color} size={size} />
+            <Ionicons name="home" size={size} color={color} />
           ),
-          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="learn"
         options={{
-          title: "Learn",
+          title: 'Learn',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book" color={color} size={size} />
+            <Ionicons name="book" size={size} color={color} />
           ),
-          headerShown: false,
         }}
       />
       <Tabs.Screen
         name="quiz"
         options={{
-          title: "Quiz",
+          title: 'Quiz',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="help-circle" color={color} size={size} />
+            <Ionicons name="trophy" size={size} color={color} />
           ),
-          headerShown: false,
         }}
       />
       <Tabs.Screen
-        name="counter"
+        name="profile"
         options={{
-          title: "counter",
+          title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="help-circle" color={color} size={size} />
+            <Ionicons name="person" size={size} color={color} />
           ),
-          headerShown: false,
+        }}
+      />
+      
+      {/* Hide dynamic routes from tab bar */}
+      <Tabs.Screen
+        name="learn/[category]"
+        options={{
+          href: null, // This hides it from the tab bar
         }}
       />
     </Tabs>

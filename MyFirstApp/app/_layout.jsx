@@ -1,34 +1,29 @@
-import { useState, useEffect } from "react";
-import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { Stack, useRouter, useSegments } from "expo-router";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useColorScheme } from "react-native";
 import { ActivityIndicator, View } from "react-native";
-import * as SecureStore from "expo-secure-store";
+import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
-export default function RootLayout() {
+function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const { userToken, isLoading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
 
   useEffect(() => {
-    checkUserStatus();
-  }, []);
+    if (isLoading) return;
 
-  const checkUserStatus = async () => {
-    try {
-      const userToken = await SecureStore.getItemAsync("userToken");
-      
-      if (userToken) {
-        setIsLoggedIn(true);
-      } else {
-        setIsLoggedIn(false);
-      }
-    } catch (error) {
-      console.log("Error checking auth:", error);
-      setIsLoggedIn(false);
+    const inAuthGroup = segments[0] === "(login)";
+
+    if (!userToken && !inAuthGroup) {
+      router.replace("/(login)/login");
+    } else if (userToken && inAuthGroup) {
+      router.replace("/(tabs)");
     }
-  };
+  }, [userToken, isLoading, segments]);
 
-  if (isLoggedIn === null) {
+  if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#007AFF" />
@@ -39,12 +34,17 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        {isLoggedIn ? (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        ) : (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        )}
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(login)" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
   );
 }
