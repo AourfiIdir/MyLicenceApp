@@ -39,9 +39,15 @@ export default function LearnCategories() {
       
       if (!res.ok) throw new Error("Failed to fetch categories");
       
+
       const data = await res.json();
-      console.log("Categories:", data); // Debug
-      setCategories(data);
+      const data2 = data.filter(cat=> {
+        if(cat.split("-")[0] === "learning") return true;
+        return false;
+      })
+
+      console.log("Categories:", data2); // Debug
+      setCategories(data2);
       
     } catch (error) {
       console.error("Error fetching categories:", error);

@@ -32,7 +32,7 @@ export default function CardDetail() {
   const fetchCard = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/cards/${cardId}`, {
+      const res = await fetch(`${API}/card/${cardId}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export default function CardDetail() {
 
   const checkCompletionStatus = async (cardId) => {
     try {
-      const res = await fetch(`${API}/complete/${cardId}`, {
+      const res = await fetch(`${API}/usertocard/status/${cardId}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export default function CardDetail() {
   const markAsComplete = async () => {
     try {
       setMarking(true);
-      const res = await fetch(`${API}/complete`, {
+      const res = await fetch(`${API}/usertocard/complete`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${userToken}`,

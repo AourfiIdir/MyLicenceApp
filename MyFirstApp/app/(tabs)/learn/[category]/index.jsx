@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,63 +9,74 @@ import {
   Alert,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { useState, useEffect } from "react";
 import { useAuth } from "../../../../contexts/AuthContext"
+import { useFocusEffect } from "@react-navigation/native";
 
 import { Ionicons } from "@expo/vector-icons";
-
 const API = "http://localhost:3000";
 
 export default function CategoryCards() {
   const router = useRouter();
   const { category } = useLocalSearchParams();
-  const { userToken } = useAuth();
+  const { userToken, userId } = useAuth();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [completedCards, setCompletedCards] = useState({});
 
+  // Initial fetch on mount
   useEffect(() => {
     fetchCards();
   }, [category]);
 
+  // Refetch when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCards();
+    }, [category, userToken])
+  );
+
   const fetchCards = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/cards/category/${category}`, {
+      const res = await fetch(`${API}/usertocard/user/${category}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
         },
       });
       const data = await res.json();
-      setCards(data);
-      fetchCompletedStatus(data);
+      
+      // Ensure data is an array
+      if (Array.isArray(data)) {
+        // Extract cards and status from the response structure
+        const cardsData = data.map(item => ({
+          ...item.cardId,
+          progressId: item._id,
+          status: item.status
+        }));
+        setCards(cardsData);
+        
+        // Extract completion status from the cards
+        const statusMap = {};
+        data.forEach((item) => {
+          if (item.cardId && item.cardId._id) {
+            statusMap[item.cardId._id] = item.status;
+          }
+        });
+        setCompletedCards(statusMap);
+      } else {
+        setCards([]);
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to load cards");
       console.error(error);
+      setCards([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchCompletedStatus = async (cardsData) => {
-    try {
-      const res = await fetch(`${API}/complete/status`, {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await res.json();
-      const statusMap = {};
-      data.forEach((item) => {
-        statusMap[item.cardId] = item.status;
-      });
-      setCompletedCards(statusMap);
-    } catch (error) {
-      console.error("Error fetching completed status:", error);
-    }
-  };
+  // ...existing code...
 
   const handleCardPress = (cardId) => {
     router.push(`/learn/${category}/${cardId}`);
@@ -101,7 +113,7 @@ export default function CategoryCards() {
         <View
           style={[
             styles.progressFill,
-            { width: `${(completedCount / cards.length) * 100}%` },
+            { width: `${cards.length > 0 ? (completedCount / cards.length) * 100 : 0}%` },
           ]}
         />
       </View>
@@ -144,6 +156,8 @@ export default function CategoryCards() {
     </ScrollView>
   );
 }
+
+// ...existing code...
 
 const styles = StyleSheet.create({
   container: {

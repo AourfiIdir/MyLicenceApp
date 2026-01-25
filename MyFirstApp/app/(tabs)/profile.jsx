@@ -43,7 +43,7 @@ const Profile = () => {
     }
 
     // Then fetch progress with the user ID
-    const progressRes = await fetch(`${API}/progress/${user._id}`, {
+    const progressRes = await fetch(`${API}/progress/user`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'application/json'
@@ -57,7 +57,7 @@ const Profile = () => {
     }
 
     // Then fetch mistakes with the user ID
-    const mistakesRes = await fetch(`${API}/mistake/${user._id}`, {
+    const mistakesRes = await fetch(`${API}/mistake/myMistakes/${user._id}`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'application/json'
@@ -67,7 +67,7 @@ const Profile = () => {
     if (mistakesRes.ok) {
       const mistakesData = await mistakesRes.json();
       console.log('Mistakes Data:', mistakesData);
-      setMistakes(Array.isArray(mistakesData) ? mistakesData : []);
+      setMistakes(Array.isArray(mistakesData.mistakes) ? mistakesData.mistakes : []);
     }
 
   } catch (error) {
