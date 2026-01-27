@@ -44,6 +44,14 @@ export default function TabLayout() {
           ),
         }}
       />
+      
+      {/* Hide dynamic routes from tab bar */}
+      <Tabs.Screen
+        name="learn/[category]"
+        options={{
+          href: null, // This hides it from the tab bar
+        }}
+      />
       <Tabs.Screen
         name="profile"
         options={{
@@ -51,14 +59,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person" size={size} color={color} />
           ),
-        }}
-      />
-      
-      {/* Hide dynamic routes from tab bar */}
-      <Tabs.Screen
-        name="learn/[category]"
-        options={{
-          href: null, // This hides it from the tab bar
         }}
       />
     </Tabs>
