@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
+// ...existing code...
 export default function TabLayout() {
   return (
     <Tabs
@@ -36,6 +37,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="learn/[category]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="quiz"
         options={{
           title: 'Quiz',
@@ -44,12 +51,10 @@ export default function TabLayout() {
           ),
         }}
       />
-      
-      {/* Hide dynamic routes from tab bar */}
       <Tabs.Screen
-        name="learn/[category]"
+        name="quiz/[category]"
         options={{
-          href: null, // This hides it from the tab bar
+          href: null,
         }}
       />
       <Tabs.Screen

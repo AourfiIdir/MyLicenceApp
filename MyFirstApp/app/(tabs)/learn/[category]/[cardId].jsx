@@ -6,13 +6,14 @@ import {
   ActivityIndicator,
   Alert,
   Text,
+  Modal,
+  FlatList,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
-import Card from "../../../../components/Card";
 
 const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
@@ -24,6 +25,10 @@ export default function CardDetail() {
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [marking, setMarking] = useState(false);
+  const [showListModal, setShowListModal] = useState(false);
+  const [lists, setLists] = useState([]);
+  const [loadingLists, setLoadingLists] = useState(false);
+  const [addingToList, setAddingToList] = useState(false);
 
   useEffect(() => {
     fetchCard();
@@ -61,6 +66,56 @@ export default function CardDetail() {
       setIsCompleted(data.status === "completed");
     } catch (error) {
       console.error("Error checking completion:", error);
+    }
+  };
+
+  const fetchLists = async () => {
+    try {
+      setLoadingLists(true);
+      const res = await fetch(`${API}/lists`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      setLists(data);
+    } catch (error) {
+      Alert.alert("Error", "Failed to load lists");
+      console.error(error);
+    } finally {
+      setLoadingLists(false);
+    }
+  };
+
+  const handleAddToList = () => {
+    setShowListModal(true);
+    fetchLists();
+  };
+
+  const addCardToList = async (listId) => {
+    try {
+      setAddingToList(true);
+      const res = await fetch(`${API}/listtocard/:${listId}/:${card._id}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cardId: card._id,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to add card to list");
+
+      Alert.alert("Success", "Card added to list! 🎉");
+      setShowListModal(false);
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to add card to list");
+      console.error(error);
+    } finally {
+      setAddingToList(false);
     }
   };
 
@@ -133,50 +188,154 @@ export default function CardDetail() {
           )}
         </View>
 
-        <View style={styles.cardContainer}>
-          <Card
-            name={card.name}
-            description={card.description}
-            category={card.category}
-            content={card.content}
-            type="learning"
-          />
+        {/* Comic Card Content */}
+        <View style={styles.contentSection}>
+          <View style={styles.comicCard}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardName}>{card.name}</Text>
+              <View style={styles.categoryBadge}>
+                <Text style={styles.categoryText}>{card.category}</Text>
+              </View>
+            </View>
+
+            {card.description && (
+              <View style={styles.descriptionBox}>
+                <Text style={styles.descriptionLabel}>ABOUT</Text>
+                <Text style={styles.descriptionText}>{card.description}</Text>
+              </View>
+            )}
+
+            {card.content && (
+              <View style={styles.contentBox}>
+                <Text style={styles.contentLabel}>KNOWLEDGE</Text>
+                {typeof card.content === "string" ? (
+                  <Text style={styles.contentText}>{card.content}</Text>
+                ) : (
+                  <>
+                    {card.content.topics && (
+                      <Text style={styles.contentText}>
+                        <Text style={styles.contentBold}>Topics:</Text>{" "}
+                        {card.content.topics}
+                      </Text>
+                    )}
+                    {card.content.level && (
+                      <Text style={[styles.contentText, { marginTop: 8 }]}>
+                        <Text style={styles.contentBold}>Level:</Text>{" "}
+                        {card.content.level}
+                      </Text>
+                    )}
+                  </>
+                )}
+              </View>
+            )}
+          </View>
         </View>
 
         <View style={styles.spacer} />
       </ScrollView>
 
-      {/* Mark Complete Button */}
+      {/* Buttons Container */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[
-            styles.markButton,
-            isCompleted && styles.markButtonCompleted,
-          ]}
-          onPress={markAsComplete}
-          disabled={marking}
-        >
-          {marking ? (
-            <ActivityIndicator color={isCompleted ? "#000" : "#FFF"} />
-          ) : (
-            <>
-              <Ionicons
-                name={isCompleted ? "checkmark" : "checkmark-outline"}
-                size={24}
-                color={isCompleted ? "#000" : "#FFF"}
-              />
-              <Text
-                style={[
-                  styles.buttonText,
-                  isCompleted && styles.buttonTextCompleted,
-                ]}
-              >
-                {isCompleted ? "MASTERED!" : "MARK AS DONE"}
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
+        <View style={styles.buttonsRow}>
+          <TouchableOpacity
+            style={styles.addListButton}
+            onPress={handleAddToList}
+            disabled={addingToList}
+          >
+            <Ionicons name="add-circle" size={24} color="#FFF" />
+            <Text style={styles.addListButtonText}>ADD TO LIST</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              styles.markButton,
+              isCompleted && styles.markButtonCompleted,
+            ]}
+            onPress={markAsComplete}
+            disabled={marking}
+          >
+            {marking ? (
+              <ActivityIndicator color={isCompleted ? "#000" : "#FFF"} />
+            ) : (
+              <>
+                <Ionicons
+                  name={isCompleted ? "checkmark" : "checkmark-outline"}
+                  size={24}
+                  color={isCompleted ? "#000" : "#FFF"}
+                />
+                <Text
+                  style={[
+                    styles.buttonText,
+                    isCompleted && styles.buttonTextCompleted,
+                  ]}
+                >
+                  {isCompleted ? "MASTERED!" : "MARK AS DONE"}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
+
+      {/* List Modal */}
+      <Modal
+        visible={showListModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowListModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>SELECT A LIST</Text>
+              <TouchableOpacity onPress={() => setShowListModal(false)}>
+                <Ionicons name="close" size={28} color="#000" />
+              </TouchableOpacity>
+            </View>
+
+            {loadingLists ? (
+              <View style={styles.loadingModal}>
+                <ActivityIndicator size="large" color="#FF6B35" />
+              </View>
+            ) : (
+              <FlatList
+                data={lists}
+                keyExtractor={(item) => item._id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.listItem}
+                    onPress={() => addCardToList(item._id)}
+                    disabled={addingToList}
+                  >
+                    <View style={styles.listItemContent}>
+                      <Ionicons name="list" size={24} color="#FF6B35" />
+                      <View style={styles.listItemText}>
+                        <Text style={styles.listItemName}>{item.name}</Text>
+                        <Text style={styles.listItemCount}>
+                          {item.cardCount || 0} cards
+                        </Text>
+                      </View>
+                    </View>
+                    <Ionicons name="chevron-forward" size={24} color="#999" />
+                  </TouchableOpacity>
+                )}
+                scrollEnabled={false}
+              />
+            )}
+
+            <TouchableOpacity
+              style={styles.createListButton}
+              onPress={() => {
+                setShowListModal(false);
+                router.push("/list/create");
+              }}
+            >
+              <Ionicons name="add" size={24} color="#FFF" />
+              <Text style={styles.createListButtonText}>CREATE NEW LIST</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -244,8 +403,96 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#34C759",
   },
-  cardContainer: {
+  contentSection: {
     padding: 20,
+  },
+  comicCard: {
+    backgroundColor: "#FFF",
+    borderRadius: 15,
+    borderWidth: 4,
+    borderColor: "#000",
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+    paddingBottom: 15,
+    borderBottomWidth: 3,
+    borderBottomColor: "#000",
+    borderStyle: "dashed",
+  },
+  cardName: {
+    fontSize: 24,
+    fontWeight: "black",
+    color: "#000",
+    flex: 1,
+  },
+  categoryBadge: {
+    backgroundColor: "#4ECDC4",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#000",
+    transform: [{ rotate: "-2deg" }],
+  },
+  categoryText: {
+    fontSize: 12,
+    fontWeight: "black",
+    color: "#000",
+    textTransform: "uppercase",
+  },
+  descriptionBox: {
+    backgroundColor: "#FFF8E1",
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: "#FF6B35",
+    padding: 15,
+    marginBottom: 15,
+  },
+  descriptionLabel: {
+    fontSize: 12,
+    fontWeight: "black",
+    color: "#FF6B35",
+    marginBottom: 8,
+    textTransform: "uppercase",
+  },
+  descriptionText: {
+    fontSize: 14,
+    color: "#333",
+    lineHeight: 20,
+    fontWeight: "500",
+  },
+  contentBox: {
+    backgroundColor: "#E8F5E9",
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: "#34C759",
+    padding: 15,
+  },
+  contentLabel: {
+    fontSize: 12,
+    fontWeight: "black",
+    color: "#34C759",
+    marginBottom: 8,
+    textTransform: "uppercase",
+  },
+  contentText: {
+    fontSize: 14,
+    color: "#333",
+    lineHeight: 20,
+    fontWeight: "500",
+  },
+  contentBold: {
+    fontWeight: "black",
+    color: "#34C759",
   },
   spacer: {
     height: 100,
@@ -261,7 +508,35 @@ const styles = StyleSheet.create({
     borderTopWidth: 3,
     borderTopColor: "#000",
   },
+  buttonsRow: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  addListButton: {
+    flex: 0.35,
+    backgroundColor: "#4ECDC4",
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: "#000",
+    paddingVertical: 16,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 4,
+  },
+  addListButtonText: {
+    fontSize: 12,
+    fontWeight: "black",
+    color: "#FFF",
+    marginLeft: 6,
+    textTransform: "uppercase",
+  },
   markButton: {
+    flex: 0.65,
     backgroundColor: "#FF6B35",
     borderRadius: 12,
     borderWidth: 3,
@@ -280,13 +555,99 @@ const styles = StyleSheet.create({
     backgroundColor: "#34C759",
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "black",
     color: "#FFF",
-    marginLeft: 8,
+    marginLeft: 6,
     textTransform: "uppercase",
   },
   buttonTextCompleted: {
     color: "#000",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#FFF8E1",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderTopWidth: 4,
+    borderTopColor: "#000",
+    maxHeight: "80%",
+    paddingBottom: 20,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 3,
+    borderBottomColor: "#000",
+    borderStyle: "dashed",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "black",
+    color: "#000",
+  },
+  loadingModal: {
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  listItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 2,
+    borderBottomColor: "#EEE",
+  },
+  listItemContent: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 15,
+  },
+  listItemText: {
+    flex: 1,
+  },
+  listItemName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  listItemCount: {
+    fontSize: 12,
+    color: "#999",
+    marginTop: 4,
+  },
+  createListButton: {
+    marginHorizontal: 20,
+    marginTop: 15,
+    backgroundColor: "#FF6B35",
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: "#000",
+    paddingVertical: 14,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 4,
+  },
+  createListButtonText: {
+    fontSize: 14,
+    fontWeight: "black",
+    color: "#FFF",
+    marginLeft: 8,
+    textTransform: "uppercase",
   },
 });

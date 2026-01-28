@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRouter, Link } from "expo-router";
-import { View, TouchableOpacity, Text, StyleSheet, TextInput, Alert } from "react-native";
+import { View, TouchableOpacity, Text, StyleSheet, TextInput, Alert, ScrollView } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
+import { Ionicons } from "@expo/vector-icons";
 import {API} from "../../constants/vars";
 
 export default function Login() {
@@ -40,102 +41,230 @@ export default function Login() {
     }
   };
 
-  // ...existing code...
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+    <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Comic Header */}
+      <View style={styles.header}>
+        <View style={styles.comicBurst}>
+          <Text style={styles.burstText}>LOGIN!</Text>
+        </View>
+        <Ionicons name="log-in-outline" size={60} color="#FFE66D" style={styles.headerIcon} />
+        <Text style={styles.title}>WELCOME BACK</Text>
+        <Text style={styles.subtitle}>HERO</Text>
+      </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        editable={!loading}
-      />
+      {/* Form Card */}
+      <View style={styles.formCard}>
+        <Text style={styles.formTitle}>ENTER THE ARENA</Text>
+        
+        <View style={styles.inputWrapper}>
+          <View style={styles.inputLabel}>
+            <Ionicons name="person" size={16} color="#FF6B35" />
+            <Text style={styles.inputLabelText}>USERNAME</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter username"
+            placeholderTextColor="#999"
+            value={username}
+            onChangeText={setUsername}
+            editable={!loading}
+          />
+        </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        editable={!loading}
-      />
+        <View style={styles.inputWrapper}>
+          <View style={styles.inputLabel}>
+            <Ionicons name="lock-closed" size={16} color="#FF6B35" />
+            <Text style={styles.inputLabelText}>PASSWORD</Text>
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter password"
+            placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            editable={!loading}
+          />
+        </View>
 
-      <TouchableOpacity 
-        style={[styles.button, loading && styles.buttonDisabled]}
-        onPress={handleLogin}
-        disabled={loading}
-      >
-        <Text style={styles.buttonText}>
-          {loading ? "Logging in..." : "Login"}
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "⚡ LOADING..." : "⚡ LOGIN NOW"}
+          </Text>
+        </TouchableOpacity>
+      </View>
 
+      {/* Sign Up Link */}
       <View style={styles.signUpContainer}>
-        <Text style={styles.signUpText}>Dont have an account? </Text>
+        <Text style={styles.signUpText}>NEW HERO? </Text>
         <Link href="/(login)/signin" asChild>
           <TouchableOpacity>
-            <Text style={styles.signUpLinkText}>Sign Up</Text>
+            <Text style={styles.signUpLinkText}>CREATE ACCOUNT</Text>
           </TouchableOpacity>
         </Link>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
-
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    backgroundColor: "#FFF8E1",
+  },
+  header: {
+    backgroundColor: "#FF6B35",
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    borderWidth: 4,
+    borderColor: "#000",
+    marginBottom: 30,
+    alignItems: "center",
+    position: "relative",
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
+  },
+  comicBurst: {
+    position: "absolute",
+    top: -20,
+    right: -20,
+    width: 80,
+    height: 80,
+    backgroundColor: "#FFE66D",
+    transform: [{ rotate: "20deg" }],
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
-    backgroundColor: "#F5F5F5",
+    borderWidth: 3,
+    borderColor: "#000",
+    borderRadius: 12,
+  },
+  burstText: {
+    fontSize: 16,
+    fontWeight: "black",
+    color: "#000",
+    transform: [{ rotate: "-20deg" }],
+  },
+  headerIcon: {
+    marginBottom: 15,
   },
   title: {
-    fontSize: 28,
+    fontSize: 32,
+    fontWeight: "black",
+    color: "#FFF",
+    textTransform: "uppercase",
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 30,
+    color: "#FFE66D",
+  },
+  formCard: {
+    backgroundColor: "#FFF",
+    borderRadius: 15,
+    borderWidth: 4,
+    borderColor: "#000",
+    padding: 25,
+    marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
+  },
+  formTitle: {
+    fontSize: 20,
+    fontWeight: "black",
+    color: "#000",
+    marginBottom: 20,
+    backgroundColor: "#4ECDC4",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    alignSelf: "flex-start",
+    borderWidth: 2,
+    borderColor: "#000",
+    transform: [{ rotate: "-1deg" }],
+  },
+  inputWrapper: {
+    marginBottom: 18,
+  },
+  inputLabel: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  inputLabelText: {
+    fontSize: 12,
+    fontWeight: "black",
+    color: "#FF6B35",
+    marginLeft: 6,
+    textTransform: "uppercase",
   },
   input: {
     width: "100%",
-    borderWidth: 1,
-    borderColor: "#DDD",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 8,
-    backgroundColor: "#FFF",
+    borderWidth: 3,
+    borderColor: "#000",
+    padding: 14,
+    borderRadius: 10,
+    backgroundColor: "#FFF8E1",
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#000",
   },
   button: {
     width: "100%",
-    backgroundColor: "#007AFF",
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginBottom: 20,
+    backgroundColor: "#FF6B6B",
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginTop: 10,
+    borderWidth: 4,
+    borderColor: "#000",
+    shadowColor: "#000",
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
     color: "#FFF",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "black",
     textAlign: "center",
+    textTransform: "uppercase",
   },
   signUpContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#FFF",
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: "#000",
   },
   signUpText: {
     fontSize: 14,
-    color: "#666",
+    color: "#000",
+    fontWeight: "bold",
   },
   signUpLinkText: {
     fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "bold",
+    color: "#FF6B35",
+    fontWeight: "black",
+    textTransform: "uppercase",
   },
 });
