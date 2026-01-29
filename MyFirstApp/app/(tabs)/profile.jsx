@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
 const Profile = () => {
-  const { logout, userToken } = useAuth();
+  const { logout, userToken,authFetch } = useAuth();
   const [userData, setUserData] = useState(null);
   const [progress, setProgress] = useState([]);
   const [mistakes, setMistakes] = useState([]);
@@ -18,11 +18,12 @@ const Profile = () => {
   }, []);
 
   const fetchProfileData = async () => {
+    
   try {
     setLoading(true);
 
     // First, fetch user data
-    const userRes = await fetch(`${API}/user/currentUser`, {
+    const userRes = await authFetch(`${API}/user/currentUser`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'application/json'
@@ -43,7 +44,7 @@ const Profile = () => {
     }
 
     // Then fetch progress with the user ID
-    const progressRes = await fetch(`${API}/progress/user`, {
+    const progressRes = await authFetch(`${API}/progress/user`, {
       headers: {
         'Authorization': `Bearer ${userToken}`,
         'Content-Type': 'application/json'

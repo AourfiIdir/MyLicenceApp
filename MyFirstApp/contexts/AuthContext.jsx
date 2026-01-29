@@ -1,8 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
 
 const AuthContext = createContext({});
+
+const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
 const storage = {
   setItem: async (key, value) => {
@@ -50,8 +53,51 @@ export function AuthProvider({ children }) {
     setUserToken(null);
   };
 
+  const refreshTokenRequest = async () => {
+    const refreshToken = await storage.getItem("refreshToken");
+    if (!refreshToken) throw new Error("No refresh token");
+
+    const res = await fetch(`${API}/login/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!res.ok) throw new Error("Refresh failed");
+
+    const data = await res.json();
+    await storage.setItem("userToken", data.token);
+    setUserToken(data.token);
+    return data.token;
+  };
+
+  const authFetch = async (url, options = {}) => {
+    const token = await storage.getItem("userToken");
+    const headers = {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    let res = await fetch(url, { ...options, headers });
+
+    if (res.status === 401) {
+      const newToken = await refreshTokenRequest();
+      const retryHeaders = {
+        ...(options.headers || {}),
+        Authorization: `Bearer ${newToken}`,
+        "Content-Type": "application/json",
+      };
+      res = await fetch(url, { ...options, headers: retryHeaders });
+    }
+
+    return res;
+  };
+
   return (
-    <AuthContext.Provider value={{ userToken, isLoading, login, logout }}>
+    <AuthContext.Provider
+      value={{ userToken, isLoading, login, logout, authFetch }}
+    >
       {children}
     </AuthContext.Provider>
   );

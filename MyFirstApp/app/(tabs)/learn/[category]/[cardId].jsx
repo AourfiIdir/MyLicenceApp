@@ -20,7 +20,7 @@ const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 export default function CardDetail() {
   const router = useRouter();
   const { cardId, category } = useLocalSearchParams();
-  const { userToken } = useAuth();
+  const { userToken, authFetch } = useAuth();
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -37,7 +37,7 @@ export default function CardDetail() {
   const fetchCard = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/card/${cardId}`, {
+      const res = await authFetch(`${API}/card/${cardId}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export default function CardDetail() {
 
   const checkCompletionStatus = async (cardId) => {
     try {
-      const res = await fetch(`${API}/usertocard/status/${cardId}`, {
+      const res = await authFetch(`${API}/usertocard/status/${cardId}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
@@ -72,7 +72,7 @@ export default function CardDetail() {
   const fetchLists = async () => {
     try {
       setLoadingLists(true);
-      const res = await fetch(`${API}/lists`, {
+      const res = await authFetch(`${API}/lists`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
@@ -96,15 +96,13 @@ export default function CardDetail() {
   const addCardToList = async (listId) => {
     try {
       setAddingToList(true);
-      const res = await fetch(`${API}/listtocard/:${listId}/:${card._id}`, {
+      const res = await authFetch(`${API}/listtocard/${listId}/${card._id}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          cardId: card._id,
-        }),
+        
       });
 
       if (!res.ok) throw new Error("Failed to add card to list");

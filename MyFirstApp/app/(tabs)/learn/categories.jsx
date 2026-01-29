@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../contexts/AuthContext.jsx";
+import { useAuth,authFetch } from "../../../contexts/AuthContext.jsx";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 import { categoryImages } from "../../../constants/images.jsx";
@@ -19,7 +19,7 @@ const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
 export default function LearnCategories() {
   const router = useRouter();
-  const { userToken } = useAuth();
+  const { userToken, authFetch } = useAuth();
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
 
@@ -30,7 +30,7 @@ export default function LearnCategories() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/card/categories`, {
+      const res = await authFetch(`${API}/card/categories`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",

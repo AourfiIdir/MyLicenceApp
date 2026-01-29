@@ -1,7 +1,4 @@
-/*
-  
-*/
-
+import { Pressable } from "react-native";
 import {
   View,
   Text,
@@ -21,7 +18,7 @@ const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
 export default function Lists() {
   const router = useRouter();
-  const { userToken } = useAuth();
+  const { userToken, authFetch } = useAuth();
   const [loading, setLoading] = useState(true);
   const [lists, setLists] = useState([]);
 
@@ -34,7 +31,7 @@ export default function Lists() {
   const fetchLists = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/lists`, {
+      const res = await authFetch(`${API}/lists`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
@@ -50,31 +47,36 @@ export default function Lists() {
     }
   };
 
-  const deleteList = async (listId) => {
-    Alert.alert("Delete List", "Are you sure?", [
-      { text: "Cancel", onPress: () => {} },
-      {
-        text: "Delete",
-        onPress: async () => {
-          try {
-            const res = await fetch(`${API}/lists/${listId}`, {
-              method: "DELETE",
-              headers: {
-                Authorization: `Bearer ${userToken}`,
-                "Content-Type": "application/json",
-              },
-            });
+  const deleteList = (listId) => {
+    Alert.alert(
+      "Delete List",
+      "Are you sure?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            console.log("Deleting list:", listId);
+            try {
+              const res = await authFetch(`${API}/lists/${listId}`, {
+                method: "DELETE",
+                headers: {
+                  Authorization: `Bearer ${userToken}`,
+                },
+              });
 
-            if (!res.ok) throw new Error("Failed to delete list");
+              if (!res.ok) throw new Error("Failed to delete list");
 
-            Alert.alert("Success", "List deleted!");
-            fetchLists();
-          } catch (error) {
-            Alert.alert("Error", error.message || "Failed to delete list");
-          }
+              fetchLists();
+            } catch (error) {
+              Alert.alert("Error", "Failed to delete list");
+            }
+          },
         },
-      },
-    ]);
+      ],
+      { cancelable: true }
+    );
   };
 
   if (loading) {
@@ -106,12 +108,13 @@ export default function Lists() {
           </View>
         ) : (
           lists.map((list) => (
-            <TouchableOpacity
-              key={list._id}
-              style={styles.listCard}
-              onPress={() => router.push(`/list/${list._id}`)}
-            >
-              <View style={styles.listContent}>
+            <View key={list._id} style={styles.listCard}>
+              {/* NAVIGATION AREA */}
+              <TouchableOpacity
+                style={styles.listContent}
+                onPress={() => router.push(`/list/${list._id}`)}
+                activeOpacity={0.7}
+              >
                 <Ionicons name="list" size={32} color="#FF6B35" />
                 <View style={styles.listInfo}>
                   <Text style={styles.listName}>{list.name}</Text>
@@ -124,17 +127,17 @@ export default function Lists() {
                     {list.cards?.length || 0} cards
                   </Text>
                 </View>
-              </View>
-              <TouchableOpacity
-                onPress={(e) => {
-                  e.stopPropagation();
-                  deleteList(list._id);
-                }}
+              </TouchableOpacity>
+
+              {/* DELETE BUTTON */}
+              <Pressable
+                onPress={() => deleteList(list._id)}
+                hitSlop={12}
                 style={styles.deleteButton}
               >
                 <Ionicons name="trash" size={20} color="#FF6B6B" />
-              </TouchableOpacity>
-            </TouchableOpacity>
+              </Pressable>
+            </View>
           ))
         )}
       </View>

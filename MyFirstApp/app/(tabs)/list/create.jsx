@@ -18,7 +18,7 @@ const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
 export default function CreateList() {
   const router = useRouter();
-  const { userToken } = useAuth();
+  const { userToken, authFetch } = useAuth();
   const [listName, setListName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,7 @@ export default function CreateList() {
 
     try {
       setLoading(true);
-      const res = await fetch(`${API}/lists`, {
+      const res = await authFetch(`${API}/lists`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${userToken}`,

@@ -18,7 +18,7 @@ const API = "http://localhost:3000";
 export default function CategoryCards() {
   const router = useRouter();
   const { category } = useLocalSearchParams();
-  const { userToken, userId } = useAuth();
+  const { userToken, userId, authFetch } = useAuth();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [completedCards, setCompletedCards] = useState({});
@@ -38,7 +38,7 @@ export default function CategoryCards() {
   const fetchCards = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/usertocard/user/${category}`, {
+      const res = await authFetch(`${API}/usertocard/user/${category}`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
