@@ -10,11 +10,10 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
-import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
-import Card from "../../../../components/Card";
+import Card from "../../../../components/Card.jsx"
 
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
+const API = process.env.EXPO_PUBLIC_API_URL;
 
 export default function CardDetail() {
   const router = useRouter();
