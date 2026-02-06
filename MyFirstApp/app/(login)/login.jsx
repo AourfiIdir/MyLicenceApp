@@ -3,7 +3,8 @@ import { useRouter, Link } from "expo-router";
 import { View, TouchableOpacity, Text, StyleSheet, TextInput, Alert, ScrollView } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
-import {API} from "../../constants/vars";
+
+const API = process.env.EXPO_PUBLIC_API_URL;
 
 export default function Login() {
   const router = useRouter();

@@ -8,6 +8,7 @@ import {
   Text,
   Modal,
   FlatList,
+  Image,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
@@ -15,7 +16,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
+const API = process.env.EXPO_PUBLIC_API_URL;
 
 export default function CardDetail() {
   const router = useRouter();
@@ -33,6 +34,67 @@ export default function CardDetail() {
   useEffect(() => {
     fetchCard();
   }, [cardId]);
+
+  /*to complete ----------------------------*/
+  const renderCardContent = () => {
+    const first_category = card.category.split("-")[0];
+    const second_category = card.category.split("-")[1];
+    if (first_category === "learning") {
+      if (second_category === "signs") {
+        const { meaning, where, do: action, mistake } = card.content || {};
+
+        return (
+          <View style={styles.signBox}>
+            {meaning && (
+              <View style={styles.row}>
+                <Text style={styles.icon}>📘</Text>
+                <View style={styles.textBox}>
+                  <Text style={styles.title}>Signification</Text>
+                  <Text style={styles.text}>{meaning}</Text>
+                </View>
+              </View>
+            )}
+
+            {where && (
+              <View style={styles.row}>
+                <Text style={styles.icon}>📍</Text>
+                <View style={styles.textBox}>
+                  <Text style={styles.title}>Quand le voir</Text>
+                  <Text style={styles.text}>{where}</Text>
+                </View>
+              </View>
+            )}
+
+            {action && (
+              <View style={styles.row}>
+                <Text style={styles.icon}>✅</Text>
+                <View style={styles.textBox}>
+                  <Text style={styles.title}>Ce que je dois faire</Text>
+                  <Text style={styles.text}>{action}</Text>
+                </View>
+              </View>
+            )}
+
+            {mistake && (
+              <View style={[styles.row, styles.mistakeBox]}>
+                <Text style={styles.icon}>⚠️</Text>
+                <View style={styles.textBox}>
+                  <Text style={[styles.title, styles.mistakeTitle]}>
+                    Erreur fréquente
+                  </Text>
+                  <Text style={styles.mistakeText}>{mistake}</Text>
+                </View>
+              </View>
+            )}
+          </View>
+        );
+      } else if (second_category === "order") {
+      } else if (second_category === "penalties") {
+      } else if (second_category === "general") {
+      }
+    } else if (first_category === "quiz") {
+    }
+  };
 
   const fetchCard = async () => {
     try {
@@ -96,18 +158,19 @@ export default function CardDetail() {
   const addCardToList = async (listId) => {
     try {
       setAddingToList(true);
-      const res = await authFetch(`${API}/listtocard/${listId}/${card._id}`, {
+
+      const res = await authFetch(`${API}/lists/${listId}/${card._id}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${userToken}`,
           "Content-Type": "application/json",
         },
-        
       });
 
       if (!res.ok) throw new Error("Failed to add card to list");
 
       Alert.alert("Success", "Card added to list! 🎉");
+      console.log(`Card ${card._id} added to list ${listId}`);
       setShowListModal(false);
     } catch (error) {
       Alert.alert("Error", error.message || "Failed to add card to list");
@@ -137,7 +200,9 @@ export default function CardDetail() {
       setIsCompleted(!isCompleted);
       Alert.alert(
         "Success",
-        isCompleted ? "Card marked as incomplete" : "Card marked as complete! 🎉"
+        isCompleted
+          ? "Card marked as incomplete"
+          : "Card marked as complete! 🎉",
       );
     } catch (error) {
       Alert.alert("Error", error.message || "Failed to mark card");
@@ -203,27 +268,22 @@ export default function CardDetail() {
               </View>
             )}
 
+            {card.imageURI && (
+              <View style={styles.imageBox}>
+                <Image
+                  source={{ uri: card.imageURI }}
+                  style={styles.cardImage}
+                  resizeMode="cover"
+                />
+              </View>
+            )}
+
+            {/*here*/}
+
             {card.content && (
               <View style={styles.contentBox}>
                 <Text style={styles.contentLabel}>KNOWLEDGE</Text>
-                {typeof card.content === "string" ? (
-                  <Text style={styles.contentText}>{card.content}</Text>
-                ) : (
-                  <>
-                    {card.content.topics && (
-                      <Text style={styles.contentText}>
-                        <Text style={styles.contentBold}>Topics:</Text>{" "}
-                        {card.content.topics}
-                      </Text>
-                    )}
-                    {card.content.level && (
-                      <Text style={[styles.contentText, { marginTop: 8 }]}>
-                        <Text style={styles.contentBold}>Level:</Text>{" "}
-                        {card.content.level}
-                      </Text>
-                    )}
-                  </>
-                )}
+                {renderCardContent()}
               </View>
             )}
           </View>
@@ -468,6 +528,18 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: "500",
   },
+  imageBox: {
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: "#000",
+    overflow: "hidden",
+    marginBottom: 15,
+    backgroundColor: "#000",
+  },
+  cardImage: {
+    width: "100%",
+    height: 250,
+  },
   contentBox: {
     backgroundColor: "#E8F5E9",
     borderRadius: 12,
@@ -647,5 +719,54 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginLeft: 8,
     textTransform: "uppercase",
+  },
+  signBox: {
+    backgroundColor: "#F9FAFB",
+    borderRadius: 16,
+    padding: 16,
+  },
+
+  row: {
+    flexDirection: "row",
+    marginBottom: 14,
+    alignItems: "flex-start",
+  },
+
+  icon: {
+    fontSize: 20,
+    marginRight: 10,
+    marginTop: 2,
+  },
+
+  textBox: {
+    flex: 1,
+  },
+
+  title: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#111827",
+    marginBottom: 2,
+  },
+
+  text: {
+    fontSize: 14,
+    color: "#374151",
+    lineHeight: 20,
+  },
+
+  mistakeBox: {
+    backgroundColor: "#FEF2F2",
+    padding: 10,
+    borderRadius: 12,
+  },
+
+  mistakeTitle: {
+    color: "#B91C1C",
+  },
+
+  mistakeText: {
+    fontSize: 14,
+    color: "#7F1D1D",
   },
 });

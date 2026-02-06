@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import {API } from "../../constants/vars";
 import {
   View,
   Text,
@@ -12,6 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+const API = process.env.EXPO_PUBLIC_API_URL;
 const initialForm = {
   nom: "",
   prenom: "",

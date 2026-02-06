@@ -54,13 +54,13 @@ export function AuthProvider({ children }) {
   };
 
   const refreshTokenRequest = async () => {
-    const refreshToken = await storage.getItem("refreshToken");
-    if (!refreshToken) throw new Error("No refresh token");
+    const refreshToken2 = await storage.getItem("refreshToken");
+    if (!refreshToken2) throw new Error("No refresh token");
 
     const res = await fetch(`${API}/login/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken }),
+      body: JSON.stringify({ refreshToken:refreshToken2 }),
     });
 
     if (!res.ok) throw new Error("Refresh failed");
@@ -81,7 +81,7 @@ export function AuthProvider({ children }) {
 
     let res = await fetch(url, { ...options, headers });
 
-    if (res.status === 401) {
+    if (res.status === 401 || res.status === 403 ||res.status === 404) {
       const newToken = await refreshTokenRequest();
       const retryHeaders = {
         ...(options.headers || {}),

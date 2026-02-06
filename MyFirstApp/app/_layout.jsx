@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native
 import { useColorScheme } from "react-native";
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
   const { userToken, isLoading } = useAuth();
@@ -32,12 +32,14 @@ function RootLayoutNav() {
   }
 
   return (
+     <GestureHandlerRootView style={{ flex: 1 }}>
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(login)" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 

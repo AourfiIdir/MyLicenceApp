@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Modal,
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { useState, useCallback } from "react";
@@ -14,7 +15,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
+const API = process.env.EXPO_PUBLIC_API_URL;
 
 export default function ListDetail() {
   const router = useRouter();
@@ -23,6 +24,13 @@ export default function ListDetail() {
   const [list, setList] = useState(null);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showTestModal, setShowTestModal] = useState(false);
+
+  const tests = [
+    { id: "quizlet", name: "Flashcard Quiz", icon: "layers", color: "#FF6B35" },
+    { id: "multiple", name: "Multiple Choice", icon: "list", color: "#4ECDC4" },
+    { id: "matching", name: "Matching", icon: "git-compare", color: "#FFE66D" },
+  ];
 
   useFocusEffect(
     useCallback(() => {
@@ -74,7 +82,7 @@ export default function ListDetail() {
         onPress: async () => {
           try {
             const res = await fetch(`${API}/listtocard/${listId}/${cardId}`, {
-              method: "DELETE",   
+              method: "DELETE",
               headers: {
                 Authorization: `Bearer ${userToken}`,
                 "Content-Type": "application/json",
@@ -93,9 +101,19 @@ export default function ListDetail() {
     ]);
   };
 
+  const handleTestSelect = (testId) => {
+    setShowTestModal(false);
+    if (testId === "quizlet") {
+      router.push({
+        pathname: "/learningTest/quizlet",
+        params: { listId,source:"userList" },
+      });
+    }
+  };
+
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.center}>
         <ActivityIndicator size="large" color="#FF6B35" />
       </View>
     );
@@ -111,50 +129,50 @@ export default function ListDetail() {
 
   return (
     <ScrollView style={styles.container}>
+      {/* HEADER */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
+        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color="#FFF" />
         </TouchableOpacity>
-        <View style={styles.headerContent}>
-          <Text style={styles.title} numberOfLines={1}>
-            {list.name}
-          </Text>
+        <View>
+          <Text style={styles.title}>{list.name}</Text>
           {list.description && (
-            <Text style={styles.description} numberOfLines={1}>
-              {list.description}
-            </Text>
+            <Text style={styles.desc}>{list.description}</Text>
           )}
         </View>
       </View>
 
       <View style={styles.content}>
-        <View style={styles.cardCountBadge}>
-          <Ionicons name="layers" size={20} color="#FFF" />
-          <Text style={styles.cardCountText}>
-            {cards.length} cards
-          </Text>
+        {/* CARD COUNT */}
+        <View style={styles.badge}>
+          <Ionicons name="layers" size={18} color="#FFF" />
+          <Text style={styles.badgeText}>{cards.length} cards</Text>
         </View>
 
+        {/* TAKE A TEST */}
+        <TouchableOpacity
+          style={styles.testBtn}
+          onPress={() => setShowTestModal(true)}
+        >
+          <Ionicons name="school" size={22} color="#000" />
+          <Text style={styles.testText}>TAKE A TEST</Text>
+        </TouchableOpacity>
+
+        {/* CARDS */}
         <FlatList
           scrollEnabled={false}
           data={cards}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.cardItem}
+              style={styles.cardRow}
               onPress={() =>
                 router.push(`/learn/${item.category}/${item._id}`)
               }
             >
-              <View style={styles.cardContent}>
-                <Ionicons name="card" size={28} color="#FF6B35" />
-                <View style={styles.cardInfo}>
-                  <Text style={styles.cardName}>{item.name}</Text>
-                  <Text style={styles.cardCategory}>{item.category}</Text>
-                </View>
+              <Ionicons name="card" size={24} color="#FF6B35" />
+              <View style={styles.cardTextContainer}>
+                <Text style={styles.cardName}>{item.name}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => removeCardFromList(item._id)}
@@ -168,50 +186,55 @@ export default function ListDetail() {
             <View style={styles.emptyContainer}>
               <Ionicons name="inbox-outline" size={64} color="#CCC" />
               <Text style={styles.emptyText}>No cards in this list</Text>
-              <Text style={styles.emptySubText}>
-                Add cards from the Learn section
-              </Text>
             </View>
           }
         />
       </View>
+
+      {/* TEST SELECTION MODAL */}
+      <Modal visible={showTestModal} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Choose a Test Type</Text>
+            {tests.map((test) => (
+              <TouchableOpacity
+                key={test.id}
+                style={[styles.testOption, { borderLeftColor: test.color, borderLeftWidth: 5 }]}
+                onPress={() => handleTestSelect(test.id)}
+              >
+                <Ionicons name={test.icon} size={24} color={test.color} />
+                <Text style={styles.testOptionText}>{test.name}</Text>
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={styles.closeBtn}
+              onPress={() => setShowTestModal(false)}
+            >
+              <Text style={styles.closeBtnText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFF8E1",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFF8E1",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFF8E1",
-  },
-  errorText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#FF6B6B",
-  },
+  container: { flex: 1, backgroundColor: "#FFF8E1" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  errorContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
+  errorText: { fontSize: 18, fontWeight: "bold", color: "#FF6B6B" },
+
   header: {
     backgroundColor: "#FF6B35",
+    padding: 20,
     paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
     borderBottomWidth: 5,
-    borderBottomColor: "#000",
+    borderColor: "#000",
     flexDirection: "row",
-    alignItems: "center",
+    gap: 12,
   },
-  backButton: {
+  backBtn: {
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -220,82 +243,62 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#FFF",
-    marginRight: 15,
   },
-  headerContent: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "black",
-    color: "#000",
-  },
-  description: {
-    fontSize: 12,
-    color: "rgba(0,0,0,0.6)",
-    marginTop: 4,
-  },
-  content: {
-    padding: 20,
-  },
-  cardCountBadge: {
+  title: { fontSize: 24, fontWeight: "black", color: "#000" },
+  desc: { fontSize: 12, opacity: 0.7 },
+
+  content: { padding: 20 },
+
+  badge: {
+    flexDirection: "row",
     backgroundColor: "#4ECDC4",
-    borderRadius: 12,
     borderWidth: 3,
     borderColor: "#000",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 4,
+    padding: 10,
+    borderRadius: 14,
+    gap: 8,
+    marginBottom: 15,
   },
-  cardCountText: {
-    fontSize: 14,
-    fontWeight: "black",
-    color: "#FFF",
-    textTransform: "uppercase",
-  },
-  cardItem: {
-    backgroundColor: "#FFF",
-    borderRadius: 12,
+  badgeText: { color: "#FFF", fontWeight: "black" },
+
+  testBtn: {
+    backgroundColor: "#FFE66D",
     borderWidth: 4,
     borderColor: "#000",
-    padding: 15,
-    marginBottom: 15,
+    borderRadius: 16,
+    padding: 16,
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
+    gap: 10,
+    marginBottom: 25,
     shadowColor: "#000",
     shadowOffset: { width: 4, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
   },
-  cardContent: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 15,
-  },
-  cardInfo: {
-    flex: 1,
-  },
-  cardName: {
-    fontSize: 16,
+  testText: {
     fontWeight: "black",
+    fontSize: 16,
     color: "#000",
   },
-  cardCategory: {
-    fontSize: 12,
-    color: "#999",
-    marginTop: 4,
+
+  cardRow: {
+    backgroundColor: "#FFF",
+    borderWidth: 3,
+    borderColor: "#000",
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 1,
   },
+  cardTextContainer: {
+    flex: 1,
+  },
+  cardName: { fontWeight: "black", fontSize: 16 },
   removeButton: {
     width: 40,
     height: 40,
@@ -306,6 +309,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#FF6B6B",
   },
+
   emptyContainer: {
     alignItems: "center",
     paddingVertical: 60,
@@ -316,9 +320,56 @@ const styles = StyleSheet.create({
     color: "#999",
     marginTop: 16,
   },
-  emptySubText: {
-    fontSize: 14,
-    color: "#CCC",
-    marginTop: 8,
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#FFF8E1",
+    borderWidth: 5,
+    borderColor: "#000",
+    borderRadius: 20,
+    padding: 20,
+    width: "80%",
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 1,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "black",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  testOption: {
+    flexDirection: "row",
+    backgroundColor: "#FFF",
+    borderWidth: 3,
+    borderColor: "#000",
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 10,
+    gap: 12,
+    alignItems: "center",
+  },
+  testOptionText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  closeBtn: {
+    backgroundColor: "#FF6B35",
+    borderWidth: 3,
+    borderColor: "#000",
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 15,
+  },
+  closeBtnText: {
+    fontWeight: "black",
+    color: "#FFF",
+    textAlign: "center",
   },
 });

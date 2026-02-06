@@ -6,111 +6,175 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-import Card from "../../components/Card";
+import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Home() {
+  const router = useRouter();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Header */}
+        {/* Comic Header */}
         <View style={styles.header}>
-          <Ionicons name="car" size={50} color="#007AFF" />
-          <Text style={styles.mainTitle}>Driver  ²</Text>
-          <Text style={styles.subtitle}>Learning App</Text>
-        </View>
-        <Card
-          name="book"
-          description="Understanding who has the right of way on the road"
-          category="Priority"
-          type="learning"
-          content={{
-            sections: [
-              {
-                title: "Right of Way",
-                content: "Vehicles coming from the right have priority unless signs indicate otherwise. Always check both directions before proceeding."
-              },
-              {
-                title: "Roundabouts",
-                content: "Vehicles already in the roundabout have priority over entering vehicles. Signal your exit and yield to traffic."
-              },
-              {
-                title: "Emergency Vehicles",
-                content: "Always give way to emergency vehicles with sirens and lights. Pull over safely and let them pass."
-              },
-              {
-                title: "Pedestrian Crossings",
-                content: "Pedestrians always have priority at marked crossings. Stop completely and wait for them to cross safely."
-              }
-            ]
-          }}
-        />
-        {/* Welcome Section */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Welcome! 👋</Text>
-          <Text style={styles.cardText}>
-            Learn everything you need to know about driving rules and regulations.
-            Practice with our interactive quizzes and become a confident driver.
-          </Text>
+          <View style={styles.comicBurst}>
+            <Text style={styles.burstText}>WELCOME!</Text>
+          </View>
+          <Ionicons name="car" size={60} color="#FFF" />
+          <Text style={styles.mainTitle}>Driver ²</Text>
+          <Text style={styles.subtitle}>Master the Road</Text>
         </View>
 
-        {/* Quick Stats */}
+        {/* Welcome Comic Card */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>HEY THERE! 👋</Text>
+            <View style={styles.zigzag} />
+          </View>
+          <View style={styles.comicCard}>
+            <Text style={styles.cardText}>
+              Ready to become a driving master? Learn everything about road rules, safety guidelines, and driving regulations!
+            </Text>
+            <View style={styles.featureBullet}>
+              <Text style={styles.bulletText}>⚡ Interactive Learning</Text>
+            </View>
+            <View style={styles.featureBullet}>
+              <Text style={styles.bulletText}>⚡ Epic Quizzes</Text>
+            </View>
+            <View style={styles.featureBullet}>
+              <Text style={styles.bulletText}>⚡ 100% Free Forever</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Stats Panels */}
         <View style={styles.statsContainer}>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>50+</Text>
-            <Text style={styles.statLabel}>Road Rules</Text>
+          <View style={[styles.statPanel, { backgroundColor: '#FFE66D' }]}>
+            <View style={styles.panelBorder}>
+              <Ionicons name="book" size={40} color="#FF6B35" />
+              <Text style={styles.statNumber}>50+</Text>
+              <Text style={styles.statLabel}>CARDS</Text>
+            </View>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>30</Text>
-            <Text style={styles.statLabel}>Quiz Questions</Text>
+          <View style={[styles.statPanel, { backgroundColor: '#4ECDC4' }]}>
+            <View style={styles.panelBorder}>
+              <Ionicons name="help-circle" size={40} color="#FFF" />
+              <Text style={[styles.statNumber, { color: '#FFF' }]}>30</Text>
+              <Text style={[styles.statLabel, { color: '#FFF' }]}>QUIZZES</Text>
+            </View>
           </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>100%</Text>
-            <Text style={styles.statLabel}>Free</Text>
-          </View>
-        </View>
-
-        {/* Features */}
-        <Text style={styles.sectionTitle}>Features</Text>
-        <View style={styles.featureItem}>
-          <Ionicons name="book" size={24} color="#007AFF" />
-          <View style={styles.featureText}>
-            <Text style={styles.featureTitle}>📚 Learn Tab</Text>
-            <Text style={styles.featureDesc}>
-              Study comprehensive road rules and safety guidelines
-            </Text>
+          <View style={[styles.statPanel, { backgroundColor: '#34C759' }]}>
+            <View style={styles.panelBorder}>
+              <Ionicons name="heart" size={40} color="#FFF" />
+              <Text style={[styles.statNumber, { color: '#FFF' }]}>∞</Text>
+              <Text style={[styles.statLabel, { color: '#FFF' }]}>FREE!</Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.featureItem}>
-          <Ionicons name="help-circle" size={24} color="#34C759" />
-          <View style={styles.featureText}>
-            <Text style={styles.featureTitle}>🏆 Quiz Tab</Text>
-            <Text style={styles.featureDesc}>
-              Test your knowledge with interactive multiple choice questions
-            </Text>
+        {/* REVISE YOUR CARDS Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>REVISE YOUR CARDS</Text>
+            <View style={styles.zigzag} />
+          </View>
+          <View style={styles.comicCard}>
+            <View style={styles.featureRow}>
+              <View style={styles.iconBadge}>
+                <Ionicons name="refresh-circle" size={28} color="#FF6B35" />
+              </View>
+              <View style={styles.featureContent}>
+                <Text style={styles.featureTitle}>📚 Study Mode</Text>
+                <Text style={styles.featureDesc}>
+                  Flip through cards and master the rules
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => router.push({
+                pathname: "/learningTest/quizlet",
+                params: { source: "reviseList" },
+              })}
+            >
+              <View style={styles.buttonInner}>
+                <Ionicons name="play" size={20} color="#FFF" />
+                <Text style={styles.buttonText}>START REVISING</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* STICK UR KNOWLEDGE Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>STICK UR KNOWLEDGE</Text>
+            <View style={styles.zigzag} />
+          </View>
+          <View style={styles.comicCard}>
+            <View style={styles.featureRow}>
+              <View style={styles.iconBadge}>
+                <Ionicons name="trophy" size={28} color="#34C759" />
+              </View>
+              <View style={styles.featureContent}>
+                <Text style={styles.featureTitle}>🏆 Quiz Mode</Text>
+                <Text style={styles.featureDesc}>
+                  Test yourself with challenging questions
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity 
+              style={[styles.actionButton, { backgroundColor: '#34C759' }]}
+              onPress={() => router.push("/(tabs)/quiz")}
+            >
+              <View style={styles.buttonInner}>
+                <Ionicons name="checkmark-circle" size={20} color="#FFF" />
+                <Text style={styles.buttonText}>START QUIZ</Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
 
         {/* Tips Section */}
-        <Text style={styles.sectionTitle}>Tips for Success</Text>
-        <View style={styles.tipBox}>
-          <Text style={styles.tipText}>✅ Start with the Learn tab to understand the rules</Text>
-        </View>
-        <View style={styles.tipBox}>
-          <Text style={styles.tipText}>✅ Take the Quiz multiple times to improve your score</Text>
-        </View>
-        <View style={styles.tipBox}>
-          <Text style={styles.tipText}>✅ Focus on areas where you score lower</Text>
-        </View>
-        <View style={styles.tipBox}>
-          <Text style={styles.tipText}>✅ Practice makes perfect - keep learning!</Text>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>PRO TIPS</Text>
+            <View style={styles.zigzag} />
+          </View>
+          <View style={styles.comicCard}>
+            <View style={styles.tipItem}>
+              <View style={styles.tipNumber}>
+                <Text style={styles.tipNum}>1</Text>
+              </View>
+              <Text style={styles.tipText}>Start with the Learn tab to understand rules</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <View style={styles.tipNumber}>
+                <Text style={styles.tipNum}>2</Text>
+              </View>
+              <Text style={styles.tipText}>Take quizzes multiple times to improve</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <View style={styles.tipNumber}>
+                <Text style={styles.tipNum}>3</Text>
+              </View>
+              <Text style={styles.tipText}>Focus on areas where you score lower</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <View style={styles.tipNumber}>
+                <Text style={styles.tipNum}>4</Text>
+              </View>
+              <Text style={styles.tipText}>Practice makes perfect - keep learning!</Text>
+            </View>
+          </View>
         </View>
 
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>Drive Safe, Learn Smart! 🚗</Text>
         </View>
+
+        <View style={styles.spacer} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -119,119 +183,227 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#FFF8E1",
   },
   header: {
+    backgroundColor: "#FF6B35",
+    paddingTop: 50,
+    paddingBottom: 40,
     alignItems: "center",
-    paddingVertical: 30,
-    paddingHorizontal: 20,
-    backgroundColor: "#FFF",
-    marginBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0",
+    position: "relative",
+    borderBottomWidth: 5,
+    borderBottomColor: "#000",
+  },
+  comicBurst: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 80,
+    height: 80,
+    backgroundColor: "#FFE66D",
+    transform: [{ rotate: "15deg" }],
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#000",
+    borderRadius: 10,
+  },
+  burstText: {
+    fontSize: 16,
+    fontWeight: "black",
+    color: "#000",
+    transform: [{ rotate: "-15deg" }],
   },
   mainTitle: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#000",
-    marginTop: 10,
+    fontSize: 42,
+    fontWeight: "black",
+    color: "#FFF",
+    marginTop: 15,
   },
   subtitle: {
     fontSize: 18,
-    color: "#666",
+    color: "#FFF8E1",
     marginTop: 5,
-  },
-  card: {
-    backgroundColor: "#FFF",
-    borderRadius: 12,
-    padding: 20,
-    marginHorizontal: 15,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontSize: 22,
     fontWeight: "bold",
+  },
+  section: {
+    paddingHorizontal: 20,
+    marginBottom: 25,
+    marginTop: 15,
+  },
+  sectionHeader: {
     marginBottom: 10,
+    position: "relative",
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: "black",
     color: "#000",
+    textTransform: "uppercase",
+    backgroundColor: "#FFE66D",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    alignSelf: "flex-start",
+    borderWidth: 3,
+    borderColor: "#000",
+    transform: [{ rotate: "-2deg" }],
+  },
+  zigzag: {
+    position: "absolute",
+    bottom: -5,
+    left: 10,
+    width: 150,
+    height: 5,
+    backgroundColor: "#FF6B35",
+  },
+  comicCard: {
+    backgroundColor: "#FFF",
+    borderRadius: 15,
+    padding: 20,
+    borderWidth: 4,
+    borderColor: "#000",
+    shadowColor: "#000",
+    shadowOffset: { width: 5, height: 5 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 5,
   },
   cardText: {
     fontSize: 16,
-    color: "#555",
+    color: "#333",
     lineHeight: 24,
+    fontWeight: "600",
+    marginBottom: 15,
+  },
+  featureBullet: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: "#FFF8E1",
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#000",
+    marginBottom: 10,
+  },
+  bulletText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#000",
   },
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginHorizontal: 15,
-    marginBottom: 20,
+    paddingHorizontal: 15,
+    marginBottom: 15,
   },
-  statBox: {
+  statPanel: {
     flex: 1,
-    backgroundColor: "#007AFF",
-    borderRadius: 10,
+    marginHorizontal: 5,
+    borderRadius: 12,
+    borderWidth: 4,
+    borderColor: "#000",
+    position: "relative",
+  },
+  panelBorder: {
     padding: 15,
     alignItems: "center",
-    marginHorizontal: 5,
   },
   statNumber: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFF",
-  },
-  statLabel: {
-    fontSize: 12,
-    color: "#E3F2FD",
+    fontSize: 28,
+    fontWeight: "black",
+    color: "#000",
     marginTop: 5,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginHorizontal: 15,
-    marginBottom: 15,
-    marginTop: 10,
+  statLabel: {
+    fontSize: 11,
+    fontWeight: "black",
     color: "#000",
+    marginTop: 2,
   },
-  featureItem: {
-    backgroundColor: "#FFF",
-    borderRadius: 10,
-    padding: 15,
-    marginHorizontal: 15,
-    marginBottom: 10,
+  featureRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 18,
   },
-  featureText: {
-    marginLeft: 15,
+  iconBadge: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#FFE66D",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#000",
+    marginRight: 15,
+  },
+  featureContent: {
     flex: 1,
   },
   featureTitle: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "black",
     color: "#000",
-    marginBottom: 5,
+    marginBottom: 4,
   },
   featureDesc: {
     fontSize: 13,
     color: "#666",
+    fontWeight: "500",
   },
-  tipBox: {
-    backgroundColor: "#E8F5E9",
-    borderLeftWidth: 4,
-    borderLeftColor: "#34C759",
-    padding: 12,
-    marginHorizontal: 15,
-    marginBottom: 8,
-    borderRadius: 6,
+  actionButton: {
+    backgroundColor: "#FF6B35",
+    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: "#000",
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 3, height: 3 },
+    shadowOpacity: 1,
+    elevation: 4,
+  },
+  buttonInner: {
+    flexDirection: "row",
+    paddingVertical: 14,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "black",
+    color: "#FFF",
+    marginLeft: 8,
+    textTransform: "uppercase",
+  },
+  tipItem: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 15,
+    paddingBottom: 15,
+    borderBottomWidth: 2,
+    borderBottomColor: "#000",
+    borderStyle: "dashed",
+  },
+  tipNumber: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#4ECDC4",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#000",
+    marginRight: 12,
+  },
+  tipNum: {
+    fontSize: 20,
+    fontWeight: "black",
+    color: "#FFF",
   },
   tipText: {
-    fontSize: 15,
-    color: "#2E7D32",
-    fontWeight: "500",
+    fontSize: 14,
+    color: "#333",
+    fontWeight: "600",
+    flex: 1,
+    lineHeight: 20,
   },
   footer: {
     paddingVertical: 30,
@@ -239,7 +411,10 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 18,
-    fontWeight: "bold",
-    color: "#007AFF",
+    fontWeight: "black",
+    color: "#FF6B35",
+  },
+  spacer: {
+    height: 30,
   },
 });
