@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-import Card from "../../components/Card";
+import Card from "../../Components/Card";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Home() {

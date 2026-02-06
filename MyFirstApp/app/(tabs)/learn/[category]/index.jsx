@@ -45,6 +45,7 @@ export default function CategoryCards() {
         },
       });
       const data = await res.json();
+      console.log('dqtq'+data);
       
       // Ensure data is an array
       if (Array.isArray(data)) {

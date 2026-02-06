@@ -8,6 +8,7 @@ import {
   Text,
   Modal,
   FlatList,
+  Image,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
@@ -45,6 +46,7 @@ export default function CardDetail() {
       });
       const data = await res.json();
       setCard(data);
+      console.log(data.imageURI);
       checkCompletionStatus(data._id);
     } catch (error) {
       Alert.alert("Error", "Failed to load card");
@@ -195,6 +197,15 @@ export default function CardDetail() {
                 <Text style={styles.categoryText}>{card.category}</Text>
               </View>
             </View>
+
+            {card.imageURI && (
+             <Image
+               source={{ uri: card.imageURI }}
+               style={styles.cardImage}
+               resizeMode="contain"
+                />
+
+            )}
 
             {card.description && (
               <View style={styles.descriptionBox}>
@@ -447,6 +458,16 @@ const styles = StyleSheet.create({
     color: "#000",
     textTransform: "uppercase",
   },
+  cardImage: {
+  width: "100%",        // full width of the card
+  height: undefined,    // let aspectRatio control height
+  aspectRatio: 16 / 9,  // adjust ratio to your image’s shape
+  borderRadius: 10,
+  marginBottom: 15,
+  borderWidth: 3,
+  borderColor: "#000",
+  backgroundColor: "#FFF", // optional, avoids blank areas looking weird
+},
   descriptionBox: {
     backgroundColor: "#FFF8E1",
     borderRadius: 12,

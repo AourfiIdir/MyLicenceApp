@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
-import Card from "../../../../components/Card";
+import Card from "../../../../Components/Card";
 
 const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
