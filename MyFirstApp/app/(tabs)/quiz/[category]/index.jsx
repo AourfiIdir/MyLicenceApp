@@ -78,9 +78,17 @@ export default function CategoryCards() {
 
   // ...existing code...
 
-  const handleCardPress = (cardId) => {
-    router.push(`/learn/${category}/${cardId}`);
-  };
+// Dans CategoryCards.jsx
+const handleCardPress = (cardId) => {
+  router.push({
+    pathname: `/(tabs)/quiz/[category]/[quiz]`,
+    params: { 
+      category: category,
+      quiz: cardId     
+    }
+  });
+};
+
 
   if (loading) {
     return (

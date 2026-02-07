@@ -17,7 +17,7 @@ import * as WebBrowser from "expo-web-browser";
 import { useAuth } from "../../contexts/AuthContext";
 
 WebBrowser.maybeCompleteAuthSession(); // Required for Google Auth
-const { googleWebClientId } = Constants.expoConfig.extra;
+//const { googleWebClientId } = Constants.expoConfig.extra;
 
 const initialForm = {
   nom: "",
@@ -152,7 +152,7 @@ export default function SignIn() {
     if (!res.ok || !data.ok) throw new Error(data.message || "Google login failed");
 
     // Save token in AuthContext
-    await login(data.token, data.refreshToken);
+    await login(data.token,data.refreshToken ,data.user);
     console.log("Google login success:", data.user);
 
     Alert.alert("Success", isSignup ? "Signed up with Google!" : "Signed in with Google!");

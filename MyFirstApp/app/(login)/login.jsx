@@ -47,7 +47,7 @@ export default function Login() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Login failed");
 
-      await login(data.token, data.refreshToken);
+      await login(data.token, data.refreshToken,data.user);
       Alert.alert("Success", "Logged in");
     } catch (error) {
       Alert.alert("Login Failed", error.message || "Invalid username or password");

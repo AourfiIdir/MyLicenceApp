@@ -221,6 +221,59 @@ export default function CardDetail() {
                   <Text style={styles.contentText}>{card.content}</Text>
                 ) : (
                   <>
+                    {/* Meaning Section */}
+                    {card.content.meaning && (
+                      <View style={styles.knowledgeItem}>
+                        <View style={styles.knowledgeIcon}>
+                          <Ionicons name="bulb" size={20} color="#FFD93D" />
+                        </View>
+                        <View style={styles.knowledgeContent}>
+                          <Text style={styles.knowledgeBold}>Signification</Text>
+                          <Text style={styles.contentText}>{card.content.meaning}</Text>
+                        </View>
+                      </View>
+                    )}
+
+                    {/* Where Section */}
+                    {card.content.where && (
+                      <View style={styles.knowledgeItem}>
+                        <View style={styles.knowledgeIcon}>
+                          <Ionicons name="location" size={20} color="#FF6B35" />
+                        </View>
+                        <View style={styles.knowledgeContent}>
+                          <Text style={styles.knowledgeBold}>Où</Text>
+                          <Text style={styles.contentText}>{card.content.where}</Text>
+                        </View>
+                      </View>
+                    )}
+
+                    {/* Do Section */}
+                    {card.content.do && (
+                      <View style={styles.knowledgeItem}>
+                        <View style={styles.knowledgeIcon}>
+                          <Ionicons name="checkmark-circle" size={20} color="#34C759" />
+                        </View>
+                        <View style={styles.knowledgeContent}>
+                          <Text style={styles.knowledgeBold}>À faire</Text>
+                          <Text style={styles.contentText}>{card.content.do}</Text>
+                        </View>
+                      </View>
+                    )}
+
+                    {/* Mistake Section */}
+                    {card.content.mistake && (
+                      <View style={styles.knowledgeItem}>
+                        <View style={styles.knowledgeIcon}>
+                          <Ionicons name="warning" size={20} color="#FF3B30" />
+                        </View>
+                        <View style={styles.knowledgeContent}>
+                          <Text style={styles.knowledgeBold}>Erreur fréquente</Text>
+                          <Text style={styles.contentText}>{card.content.mistake}</Text>
+                        </View>
+                      </View>
+                    )}
+
+                    {/* Fallback for other content types */}
                     {card.content.topics && (
                       <Text style={styles.contentText}>
                         <Text style={styles.contentBold}>Topics:</Text>{" "}
@@ -459,15 +512,15 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   cardImage: {
-  width: "100%",        // full width of the card
-  height: undefined,    // let aspectRatio control height
-  aspectRatio: 16 / 9,  // adjust ratio to your image’s shape
-  borderRadius: 10,
-  marginBottom: 15,
-  borderWidth: 3,
-  borderColor: "#000",
-  backgroundColor: "#FFF", // optional, avoids blank areas looking weird
-},
+    width: "100%",
+    height: undefined,
+    aspectRatio: 16 / 9,
+    borderRadius: 10,
+    marginBottom: 15,
+    borderWidth: 3,
+    borderColor: "#000",
+    backgroundColor: "#FFF",
+  },
   descriptionBox: {
     backgroundColor: "#FFF8E1",
     borderRadius: 12,
@@ -500,7 +553,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "black",
     color: "#34C759",
-    marginBottom: 8,
+    marginBottom: 12,
     textTransform: "uppercase",
   },
   contentText: {
@@ -512,6 +565,36 @@ const styles = StyleSheet.create({
   contentBold: {
     fontWeight: "black",
     color: "#34C759",
+  },
+  knowledgeItem: {
+    flexDirection: "row",
+    marginBottom: 15,
+    paddingBottom: 15,
+    borderBottomWidth: 2,
+    borderBottomColor: "#C8E6C9",
+    borderStyle: "dashed",
+  },
+  knowledgeIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#FFF",
+    borderWidth: 2,
+    borderColor: "#000",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+    marginTop: 2,
+  },
+  knowledgeContent: {
+    flex: 1,
+  },
+  knowledgeBold: {
+    fontSize: 13,
+    fontWeight: "black",
+    color: "#34C759",
+    marginBottom: 4,
+    textTransform: "uppercase",
   },
   spacer: {
     height: 100,
