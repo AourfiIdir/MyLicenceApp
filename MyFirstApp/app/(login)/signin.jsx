@@ -14,6 +14,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import {useAuth} from "../../contexts/AuthContext"
 
+WebBrowser.maybeCompleteAuthSession(); // Required for Google Auth
+//const { googleWebClientId } = Constants.expoConfig.extra;
+
 const API = process.env.EXPO_PUBLIC_API_URL;
 const initialForm = {
   nom: "",
@@ -148,7 +151,7 @@ export default function SignIn() {
     if (!res.ok || !data.ok) throw new Error(data.message || "Google login failed");
 
     // Save token in AuthContext
-    await login(data.token, data.refreshToken);
+    await login(data.token,data.refreshToken ,data.user);
     console.log("Google login success:", data.user);
 
     Alert.alert("Success", isSignup ? "Signed up with Google!" : "Signed in with Google!");
