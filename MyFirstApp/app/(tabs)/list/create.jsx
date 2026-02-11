@@ -13,8 +13,9 @@ import { useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
+import { BACKEND_API } from "../../../constants/constants";
 
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
+const API = BACKEND_API;
 
 export default function CreateList() {
   const router = useRouter();

@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
-
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
+import { BACKEND_API } from '../../constants/constants';
+const API = BACKEND_API;
 
 const Profile = () => {
   const { logout, userToken,authFetch } = useAuth();

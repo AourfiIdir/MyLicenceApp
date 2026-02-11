@@ -13,10 +13,9 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
-import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
-
-const API = process.env.EXPO_PUBLIC_API_URL;
+import { BACKEND_API } from "../../../../constants/constants";
+const API = BACKEND_API;
 
 export default function CardDetail() {
   const router = useRouter();
@@ -450,7 +449,7 @@ export default function CardDetail() {
                       <View style={styles.listItemText}>
                         <Text style={styles.listItemName}>{item.name}</Text>
                         <Text style={styles.listItemCount}>
-                          {item.cardCount || 0} cards
+                          {item.cards.length || 0} cards
                         </Text>
                       </View>
                     </View>

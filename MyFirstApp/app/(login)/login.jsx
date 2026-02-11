@@ -5,7 +5,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
-const API = process.env.EXPO_PUBLIC_API_URL;
+import { BACKEND_API } from "../../constants/constants";
+const API = BACKEND_API;
 export default function Login() {
   const router = useRouter();
   const { login } = useAuth();

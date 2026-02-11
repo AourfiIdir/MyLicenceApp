@@ -5,8 +5,8 @@ import Constants from "expo-constants";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../../../../components/Card.jsx"
-
-const API = process.env.EXPO_PUBLIC_API_URL;
+import { BACKEND_API } from "../../../../constants/constants.jsx";
+const API = BACKEND_API;
 
 export default function QuizScreen() {
   const { quiz: cardId,category } = useLocalSearchParams(); 

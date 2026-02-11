@@ -12,9 +12,9 @@ import Animated, {
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Constants from "expo-constants";
 import { useAuth } from "../../contexts/AuthContext";
-
+import { BACKEND_API } from "../../constants/constants";
 const { width } = Dimensions.get("window");
-const API = process.env.EXPO_PUBLIC_API_URL || Constants.manifest.extra.apiUrl;
+const API = BACKEND_API ;
 
 export default function QuizletTest() {
   const { listId, source } = useLocalSearchParams();
@@ -24,6 +24,7 @@ export default function QuizletTest() {
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
+  const [nocards,setNocards] = useState(false);
 
   const x = useSharedValue(0);
   const rotate = useSharedValue(0);
@@ -41,6 +42,7 @@ export default function QuizletTest() {
 
           if (!Array.isArray(listJson.cards) || listJson.cards.length === 0) {
             setCards([]);
+            setNocards(true);
             return;
           }
 
@@ -60,11 +62,13 @@ export default function QuizletTest() {
         if (source === "reviseList") {
           const hitRes = await authFetch(`${API}/usertocard/hitCards`);
           const hitJson = await hitRes.json();
-
+          console.log(hitJson);
           if (!Array.isArray(hitJson.cards) || hitJson.cards.length === 0) {
             setCards([]);
+            setNocards(true);
             return;
           }
+          
 
           const fetched = await Promise.all(
             hitJson.cards.map(async (cardId) => {
@@ -175,6 +179,15 @@ export default function QuizletTest() {
         <Text style={styles.loading}>Loading cards…</Text>
       </View>
     );
+  }
+
+  if(nocards){
+    return <View>
+      <Text>Nothing to revise, your are a genius</Text>
+      <TouchableOpacity style={styles.emptyBtn} onPress={()=>router.replace(`/`)}>
+        <Text style={styles.emptyBtnText}>go back to learning</Text>
+      </TouchableOpacity>
+    </View>
   }
 
   if (!cards[index]) {

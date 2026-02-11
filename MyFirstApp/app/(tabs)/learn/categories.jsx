@@ -14,8 +14,8 @@ import { useAuth,authFetch } from "../../../contexts/AuthContext.jsx";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 import { categoryImages } from "../../../constants/images.jsx";
-
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
+import { BACKEND_API } from "../../../constants/constants.jsx";
+const API = BACKEND_API;
 
 export default function LearnCategories() {
   const router = useRouter();

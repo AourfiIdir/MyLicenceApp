@@ -13,11 +13,11 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {useAuth} from "../../contexts/AuthContext"
-
+import { BACKEND_API } from "../../constants/constants";
 WebBrowser.maybeCompleteAuthSession(); // Required for Google Auth
 //const { googleWebClientId } = Constants.expoConfig.extra;
 
-const API = process.env.EXPO_PUBLIC_API_URL;
+const API = BACKEND_API;
 const initialForm = {
   nom: "",
   prenom: "",

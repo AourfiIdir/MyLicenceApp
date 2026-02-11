@@ -14,8 +14,8 @@ import { useRouter } from "expo-router";
 import { useAuth } from "../../../contexts/AuthContext";
 import Constants from "expo-constants";
 import { categoryImages } from "../../../constants/images";
-
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
+import { BACKEND_API } from "../../../constants/constants";
+const API = BACKEND_API;
 
 export default function Quiz() {
   const router = useRouter();

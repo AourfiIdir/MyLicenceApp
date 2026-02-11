@@ -14,8 +14,8 @@ import { useState, useCallback } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
-
-const API = process.env.EXPO_PUBLIC_API_URL;
+import { BACKEND_API } from "../../../../constants/constants";
+const API = BACKEND_API;
 
 export default function ListDetail() {
   const router = useRouter();

@@ -11,9 +11,9 @@ import {
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuth } from "../../../../contexts/AuthContext"
 import { useFocusEffect } from "@react-navigation/native";
-
+import { BACKEND_API } from "../../../../constants/constants";
 import { Ionicons } from "@expo/vector-icons";
-const API = "http://localhost:3000";
+const API = BACKEND_API;
 
 export default function CategoryCards() {
   const router = useRouter();
