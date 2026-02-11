@@ -136,7 +136,7 @@ export default function QuizResult() {
           onPress={() => router.push("/(tabs)/learn")}
         >
           <Text style={styles.tertiaryButtonText}>
-            Explorer d'autres catégories
+            Explorer dautres catégories
           </Text>
         </TouchableOpacity>
       </View>
