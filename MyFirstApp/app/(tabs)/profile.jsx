@@ -1,13 +1,15 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
 import { BACKEND_API } from '../../constants/constants';
 const API = BACKEND_API;
 
 const Profile = () => {
-  const { logout, userToken,authFetch } = useAuth();
+  const { logout, userToken, authFetch } = useAuth();
+  const router = useRouter();
   const [userData, setUserData] = useState(null);
   const [progress, setProgress] = useState([]);
   const [mistakes, setMistakes] = useState([]);
@@ -18,66 +20,65 @@ const Profile = () => {
   }, []);
 
   const fetchProfileData = async () => {
-    
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // First, fetch user data
-    const userRes = await authFetch(`${API}/user/currentUser`, {
-      headers: {
-        'Authorization': `Bearer ${userToken}`,
-        'Content-Type': 'application/json'
+      // First, fetch user data
+      const userRes = await authFetch(`${API}/user/currentUser`, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!userRes.ok) {
+        throw new Error('Failed to fetch user data');
       }
-    });
-    
-    if (!userRes.ok) {
-      throw new Error('Failed to fetch user data');
-    }
-    
-    const user = await userRes.json();
-    console.log('User Data:', user);
-    setUserData(user);
+      
+      const user = await userRes.json();
+      console.log('User Data:', user);
+      setUserData(user);
 
-    // Check if user._id exists
-    if (!user._id) {
-      throw new Error('User ID not found');
-    }
-
-    // Then fetch progress with the user ID
-    const progressRes = await authFetch(`${API}/progress/user`, {
-      headers: {
-        'Authorization': `Bearer ${userToken}`,
-        'Content-Type': 'application/json'
+      // Check if user._id exists
+      if (!user._id) {
+        throw new Error('User ID not found');
       }
-    });
-    
-    if (progressRes.ok) {
-      const progressData = await progressRes.json();
-      console.log('Progress Data:', progressData);
-      setProgress(Array.isArray(progressData) ? progressData : []);
-    }
 
-    // Then fetch mistakes with the user ID
-    const mistakesRes = await fetch(`${API}/mistake/myMistakes/${user._id}`, {
-      headers: {
-        'Authorization': `Bearer ${userToken}`,
-        'Content-Type': 'application/json'
+      // Then fetch progress with the user ID
+      const progressRes = await authFetch(`${API}/progress/user`, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (progressRes.ok) {
+        const progressData = await progressRes.json();
+        console.log('Progress Data:', progressData);
+        setProgress(Array.isArray(progressData) ? progressData : []);
       }
-    });
-    
-    if (mistakesRes.ok) {
-      const mistakesData = await mistakesRes.json();
-      console.log('Mistakes Data:', mistakesData);
-      setMistakes(Array.isArray(mistakesData.mistakes) ? mistakesData.mistakes : []);
-    }
 
-  } catch (error) {
-    console.error('Fetch Error:', error);
-    Alert.alert("Error", error.message || "Failed to load profile data");
-  } finally {
-    setLoading(false);
-  }
-};
+      // Then fetch mistakes with the user ID
+      const mistakesRes = await fetch(`${API}/mistake/myMistakes/${user._id}`, {
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (mistakesRes.ok) {
+        const mistakesData = await mistakesRes.json();
+        console.log('Mistakes Data:', mistakesData);
+        setMistakes(Array.isArray(mistakesData.mistakes) ? mistakesData.mistakes : []);
+      }
+
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      Alert.alert("Error", error.message || "Failed to load profile data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getTotalPoints = () => {
     return progress.reduce((sum, p) => sum + p.points, 0);
@@ -125,13 +126,17 @@ const Profile = () => {
             </View>
           </View>
         </View>
-        <View style={[styles.statPanel, { backgroundColor: '#FF6B6B' }]}>
+        <TouchableOpacity 
+          style={[styles.statPanel, { backgroundColor: '#FF6B6B' }]}
+          onPress={() => router.push('/(tabs)/quiz/all-mistakes')}
+          activeOpacity={0.7}
+        >
           <View style={styles.panelBorder}>
             <Ionicons name="close-circle" size={40} color="#FFF" />
             <Text style={[styles.statNumber, { color: '#FFF' }]}>{mistakes.length}</Text>
             <Text style={[styles.statLabel, { color: '#FFF' }]}>OOPS!</Text>
           </View>
-        </View>
+        </TouchableOpacity>
         <View style={[styles.statPanel, { backgroundColor: '#4ECDC4' }]}>
           <View style={styles.panelBorder}>
             <Ionicons name="checkmark-circle" size={40} color="#FFF" />
@@ -184,7 +189,7 @@ const Profile = () => {
         </View>
       </View>
 
-      {/* Mistakes Comic Panel */}
+      {/* Mistakes Comic Panel with "View All" button */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>VILLAIN STRIKES</Text>
@@ -196,18 +201,32 @@ const Profile = () => {
               <Text style={styles.heroText}>🦸 FLAWLESS VICTORY! 🦸</Text>
             </View>
           ) : (
-            mistakes.slice(0, 5).map((mistake, index) => (
-              <View key={index} style={styles.mistakeItem}>
-                <View style={styles.mistakeIcon}>
-                  <Text style={styles.xText}>✗</Text>
+            <>
+              {mistakes.slice(0, 5).map((mistake, index) => (
+                <View key={index} style={styles.mistakeItem}>
+                  <View style={styles.mistakeIcon}>
+                    <Text style={styles.xText}>✗</Text>
+                  </View>
+                  <View style={styles.mistakeBubble}>
+                    <Text style={styles.mistakeText} numberOfLines={2}>
+                      {mistake.mistake}
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.mistakeBubble}>
-                  <Text style={styles.mistakeText} numberOfLines={2}>
-                    {mistake.mistake}
+              ))}
+              {mistakes.length > 5 && (
+                <TouchableOpacity 
+                  style={styles.viewAllButton}
+                  onPress={() => router.push('/(tabs)/quiz/all-mistakes')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.viewAllText}>
+                    Voir toutes les erreurs ({mistakes.length})
                   </Text>
-                </View>
-              </View>
-            ))
+                  <Ionicons name="chevron-forward" size={20} color="#FF6B35" />
+                </TouchableOpacity>
+              )}
+            </>
           )}
         </View>
       </View>
@@ -530,6 +549,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#000',
     fontWeight: '600',
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 15,
+    marginTop: 10,
+    backgroundColor: '#FFE66D',
+    borderRadius: 10,
+    borderWidth: 3,
+    borderColor: '#000',
+    gap: 8,
+  },
+  viewAllText: {
+    fontSize: 14,
+    fontWeight: 'black',
+    color: '#FF6B35',
   },
   emptyPanel: {
     alignItems: 'center',

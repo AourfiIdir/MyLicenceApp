@@ -12,7 +12,6 @@ import {
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../../contexts/AuthContext";
-import Constants from "expo-constants";
 import { categoryImages } from "../../../constants/images";
 import { BACKEND_API } from "../../../constants/constants";
 const API = BACKEND_API;
