@@ -5,7 +5,6 @@ import Constants from "expo-constants";
 
 const AuthContext = createContext({});
 
-const API = Constants.expoConfig?.extra?.API || "http://localhost:3000";
 
 const storage = {
   setItem: async (key, value) => {
@@ -102,5 +101,4 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-
 export const useAuth = () => useContext(AuthContext);
