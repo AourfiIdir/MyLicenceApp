@@ -88,7 +88,7 @@ export default function Quiz() {
             <Image
               source={
                 categoryImages[categoryName] ||
-                require("../../../assets/category/default.png")
+                require("../../../assets/category/quiz.png")
               }
               style={styles.categoryImage}
             />

@@ -54,12 +54,12 @@ export default function SignIn() {
       "wilaya",
       "username",
     ];
-    for (const k of required) if (!form[k]) return `${k} is required`;
-    if (!isEmailValid(form.email)) return "Invalid email";
+    for (const k of required) if (!form[k]) return `${k} est requis`;
+    if (!isEmailValid(form.email)) return "Email invalide";
     if (!isPasswordValid(form.password))
-      return "Password must be ≥6 chars, include letters and numbers";
-    if (form.age && Number(form.age) < 18) return "Age must be ≥18";
-    if (!["male", "female"].includes(form.sexe)) return "Sexe must be male/female";
+      return "Le mot de passe doit faire ≥6 caractères, inclure des lettres et des chiffres";
+    if (form.age && Number(form.age) < 18) return "L’âge doit être ≥18";
+    if (!["male", "female"].includes(form.sexe)) return "Le sexe doit être male/female";
     return null;
   };
 
@@ -70,39 +70,39 @@ export default function SignIn() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/request-otp`, {
+      const res = await fetch(`${API}/signin/request-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to send code");
-      Alert.alert("Check email", "We sent a code to verify your account.");
+      if (!res.ok) throw new Error(data.message || "Échec de l’envoi du code");
+      Alert.alert("Vérifiez votre email", "Nous avons envoyé un code pour vérifier votre compte.");
       setStep("verify");
     } catch (e) {
-      Alert.alert("Error", e.message || "Could not send code");
+      Alert.alert("Erreur", e.message || "Impossible d’envoyer le code");
     } finally {
       setLoading(false);
     }
   };
 
   const handleVerifyAndSignup = async () => {
-    if (!otp) return Alert.alert("Validation", "Enter the code sent to your email");
+    if (!otp) return Alert.alert("Validation", "Saisissez le code envoyé par email");
 
     setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/signup`, {
+      const res = await fetch(`${API}/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, otp }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Invalid code");
+      if (!res.ok) throw new Error(data.message || "Code invalide");
 
-      Alert.alert("Success", "Account verified");
+      Alert.alert("Succès", "Compte vérifié");
       router.push("/(login)/login");
     } catch (e) {
-      Alert.alert("Error", e.message || "Invalid code");
+      Alert.alert("Erreur", e.message || "Code invalide");
     } finally {
       setLoading(false);
     }
@@ -111,16 +111,16 @@ export default function SignIn() {
   const handleResendOtp = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/resend-otp`, {
+      const res = await fetch(`${API}/signin/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to resend");
-      Alert.alert("Sent", "New code sent to your email");
+      if (!res.ok) throw new Error(data.message || "Échec du renvoi");
+      Alert.alert("Envoyé", "Nouveau code envoyé à votre email");
     } catch (e) {
-      Alert.alert("Error", e.message || "Could not resend code");
+      Alert.alert("Erreur", e.message || "Impossible de renvoyer le code");
     } finally {
       setLoading(false);
     }
@@ -148,16 +148,16 @@ export default function SignIn() {
     });
 
     const data = await res.json();
-    if (!res.ok || !data.ok) throw new Error(data.message || "Google login failed");
+    if (!res.ok || !data.ok) throw new Error(data.message || "Connexion Google échouée");
 
     // Save token in AuthContext
     await login(data.token,data.refreshToken ,data.user);
     console.log("Google login success:", data.user);
 
-    Alert.alert("Success", isSignup ? "Signed up with Google!" : "Signed in with Google!");
+    Alert.alert("Succès", isSignup ? "Inscription avec Google réussie !" : "Connexion avec Google réussie !");
     router.replace("/"); 
   } catch (err) {
-    Alert.alert("Google login error", err.message);
+    Alert.alert("Erreur de connexion Google", err.message);
   } finally {
     setLoading(false);
   }
@@ -170,28 +170,28 @@ export default function SignIn() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.comicBurst}>
-          <Text style={styles.burstText}>{step === "form" ? "SIGNUP!" : "VERIFY!"}</Text>
+          <Text style={styles.burstText}>{step === "form" ? "INSCRIPTION !" : "VÉRIFIER !"}</Text>
         </View>
         <Ionicons name={step === "form" ? "person-add" : "mail-unread"} size={60} color="#FFE66D" style={styles.headerIcon} />
-        <Text style={styles.title}>{step === "form" ? "CREATE ACCOUNT" : "VERIFY EMAIL"}</Text>
-        <Text style={styles.subtitle}>{step === "form" ? "JOIN THE QUEST" : "CONFIRM CODE"}</Text>
+        <Text style={styles.title}>{step === "form" ? "CRÉER UN COMPTE" : "VÉRIFIER L’EMAIL"}</Text>
+        <Text style={styles.subtitle}>{step === "form" ? "REJOINS LA QUÊTE" : "CONFIRME LE CODE"}</Text>
       </View>
 
       {/* Form Card */}
       <View style={styles.formCard}>
         {step === "form" ? (
           <>
-            <Text style={styles.formTitle}>HERO DETAILS</Text>
+            <Text style={styles.formTitle}>INFOS DU HÉROS</Text>
 
             {/* FIRST NAME */}
             <View style={styles.inputWrapper}>
               <View style={styles.inputLabel}>
                 <Ionicons name="person" size={16} color="#FF6B35" />
-                <Text style={styles.inputLabelText}>FIRST NAME</Text>
+                <Text style={styles.inputLabelText}>PRÉNOM</Text>
               </View>
               <TextInput
                 style={styles.input}
-                placeholder="Nom"
+                placeholder="Prénom"
                 value={form.nom}
                 onChangeText={(v) => setField("nom", v)}
                 placeholderTextColor="#999"
@@ -202,11 +202,11 @@ export default function SignIn() {
             <View style={styles.inputWrapper}>
               <View style={styles.inputLabel}>
                 <Ionicons name="person" size={16} color="#FF6B35" />
-                <Text style={styles.inputLabelText}>LAST NAME</Text>
+                <Text style={styles.inputLabelText}>NOM</Text>
               </View>
               <TextInput
                 style={styles.input}
-                placeholder="Prenom"
+                placeholder="Nom"
                 value={form.prenom}
                 onChangeText={(v) => setField("prenom", v)}
                 placeholderTextColor="#999"
@@ -217,11 +217,11 @@ export default function SignIn() {
             <View style={styles.inputWrapper}>
               <View style={styles.inputLabel}>
                 <Ionicons name="at" size={16} color="#FF6B35" />
-                <Text style={styles.inputLabelText}>USERNAME</Text>
+                <Text style={styles.inputLabelText}>NOM D’UTILISATEUR</Text>
               </View>
               <TextInput
                 style={styles.input}
-                placeholder="Username"
+                placeholder="Nom d’utilisateur"
                 value={form.username}
                 onChangeText={(v) => setField("username", v)}
                 placeholderTextColor="#999"
@@ -248,11 +248,11 @@ export default function SignIn() {
             <View style={styles.inputWrapper}>
               <View style={styles.inputLabel}>
                 <Ionicons name="lock-closed" size={16} color="#FF6B35" />
-                <Text style={styles.inputLabelText}>PASSWORD</Text>
+                <Text style={styles.inputLabelText}>MOT DE PASSE</Text>
               </View>
               <TextInput
                 style={styles.input}
-                placeholder="Password (6+ chars, letters & numbers)"
+                placeholder="Mot de passe (6+ caractères, lettres & chiffres)"
                 value={form.password}
                 onChangeText={(v) => setField("password", v)}
                 secureTextEntry
@@ -265,7 +265,7 @@ export default function SignIn() {
               <View style={[styles.inputWrapper, { flex: 1, marginRight: 10 }]}>
                 <View style={styles.inputLabel}>
                   <Ionicons name="person-circle" size={16} color="#FF6B35" />
-                  <Text style={styles.inputLabelText}>GENDER</Text>
+                  <Text style={styles.inputLabelText}>SEXE</Text>
                 </View>
                 <TextInput
                   style={styles.input}
@@ -279,11 +279,11 @@ export default function SignIn() {
               <View style={[styles.inputWrapper, { flex: 1 }]}>
                 <View style={styles.inputLabel}>
                   <Ionicons name="calendar" size={16} color="#FF6B35" />
-                  <Text style={styles.inputLabelText}>AGE</Text>
+                  <Text style={styles.inputLabelText}>ÂGE</Text>
                 </View>
                 <TextInput
                   style={styles.input}
-                  placeholder="Age"
+                  placeholder="Âge"
                   value={form.age}
                   onChangeText={(v) => setField("age", v)}
                   keyboardType="numeric"
@@ -314,21 +314,21 @@ export default function SignIn() {
               disabled={loading}
             >
               <Text style={[styles.buttonText, { color: "#FFF" }]}>
-                ⚡ SIGN IN WITH GOOGLE
+                ⚡ SE CONNECTER AVEC GOOGLE
               </Text>
             </TouchableOpacity>
           </>
         ) : (
           <>
-            <Text style={styles.formTitle}>EMAIL VERIFICATION</Text>
+            <Text style={styles.formTitle}>VÉRIFICATION EMAIL</Text>
             <Text style={styles.verifyHelper}>
-              ✉️ Enter the code sent to
+              ✉️ Saisissez le code envoyé à
               <Text style={styles.emailHighlight}> {form.email}</Text>
             </Text>
             <View style={styles.inputWrapper}>
               <View style={styles.inputLabel}>
                 <Ionicons name="key" size={16} color="#FF6B35" />
-                <Text style={styles.inputLabelText}>VERIFICATION CODE</Text>
+                <Text style={styles.inputLabelText}>CODE DE VÉRIFICATION</Text>
               </View>
               <TextInput
                 style={styles.input}
@@ -352,11 +352,11 @@ export default function SignIn() {
           <Text style={styles.buttonText}>
             {loading
               ? step === "form"
-                ? "⚡ SENDING..."
-                : "⚡ VERIFYING..."
+                ? "⚡ ENVOI..."
+                : "⚡ VÉRIFICATION..."
               : step === "form"
-              ? "⚡ SEND CODE"
-              : "⚡ CREATE ACCOUNT"}
+              ? "⚡ ENVOYER LE CODE"
+              : "⚡ CRÉER LE COMPTE"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -368,7 +368,7 @@ export default function SignIn() {
           onPress={handleResendOtp}
           disabled={loading}
         >
-          <Text style={styles.resendText}>📬 DIDNT RECEIVE? RESEND CODE</Text>
+          <Text style={styles.resendText}>📬 PAS REÇU ? RENVOYER LE CODE</Text>
         </TouchableOpacity>
       )}
 
@@ -377,11 +377,13 @@ export default function SignIn() {
         style={styles.loginLink}
         onPress={() => router.push("/(login)/login")}
       >
-        <Text style={styles.loginLinkText}>ALREADY A HERO? LOGIN</Text>
+        <Text style={styles.loginLinkText}>DÉJÀ UN HÉROS ? SE CONNECTER</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, paddingVertical: 40, paddingHorizontal: 20, backgroundColor: "#FFF8E1" },

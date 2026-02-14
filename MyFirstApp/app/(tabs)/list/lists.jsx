@@ -1,17 +1,15 @@
-import { Pressable } from "react-native";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  TouchableOpacity,
   ActivityIndicator,
   Alert,
+  FlatList,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { useState, useCallback } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
-import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 import { BACKEND_API } from "../../../constants/constants";
 
@@ -26,7 +24,7 @@ export default function Lists() {
   useFocusEffect(
     useCallback(() => {
       fetchLists();
-    }, [])
+    }, [userToken])
   );
 
   const fetchLists = async () => {
@@ -35,222 +33,140 @@ export default function Lists() {
       const res = await authFetch(`${API}/lists`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
         },
       });
+
       const data = await res.json();
       setLists(data);
     } catch (error) {
+      console.log(error);
       Alert.alert("Error", "Failed to load lists");
-      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const deleteList = (listId) => {
-    Alert.alert(
-      "Delete List",
-      "Are you sure?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            console.log("Deleting list:", listId);
-            try {
-              const res = await authFetch(`${API}/lists/${listId}`, {
-                method: "DELETE",
-                headers: {
-                  Authorization: `Bearer ${userToken}`,
-                },
-              });
+  const deleteList = async (listId) => {
+    try {
+      console.log("DELETE PRESSED");
 
-              if (!res.ok) throw new Error("Failed to delete list");
-
-              fetchLists();
-            } catch (error) {
-              Alert.alert("Error", "Failed to delete list");
-            }
-          },
+      const res = await authFetch(`${API}/lists/${listId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
         },
-      ],
-      { cancelable: true }
-    );
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setLists((prev) => prev.filter((item) => item._id !== listId));
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Failed to delete list");
+    }
   };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      
+      {/* LEFT SIDE (NAVIGATION) */}
+      <TouchableOpacity
+        style={styles.cardContent}
+        onPress={() => router.push(`/list/${item._id}`)}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="list" size={28} color="#FF6B35" />
+        <View style={{ marginLeft: 12 }}>
+          <Text style={styles.titleText}>{item.name}</Text>
+          <Text style={styles.subtitle}>
+            {item.cards?.length || 0} cards
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* RIGHT SIDE (DELETE) */}
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => deleteList(item._id)}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="trash" size={20} color="#FFF" />
+      </TouchableOpacity>
+
+    </View>
+  );
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.loading}>
         <ActivityIndicator size="large" color="#FF6B35" />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={styles.header}>
-        <Text style={styles.title}>MY LISTS</Text>
-        <TouchableOpacity
-          style={styles.createButton}
-          onPress={() => router.push("/list/create")}
-        >
-          <Ionicons name="add-circle" size={28} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.listContainer}>
-        {lists.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="list-outline" size={64} color="#CCC" />
-            <Text style={styles.emptyText}>No lists yet</Text>
-            <Text style={styles.emptySubText}>Create your first list!</Text>
-          </View>
-        ) : (
-          lists.map((list) => (
-            <View key={list._id} style={styles.listCard}>
-              {/* NAVIGATION AREA */}
-              <TouchableOpacity
-                style={styles.listContent}
-                onPress={() => router.push(`/list/${list._id}`)}
-                activeOpacity={0.7}
-              >
-                <Ionicons name="list" size={32} color="#FF6B35" />
-                <View style={styles.listInfo}>
-                  <Text style={styles.listName}>{list.name}</Text>
-                  {list.description && (
-                    <Text style={styles.listDescription} numberOfLines={1}>
-                      {list.description}
-                    </Text>
-                  )}
-                  <Text style={styles.listCount}>
-                    {list.cards?.length || 0} cards
-                  </Text>
-                </View>
-              </TouchableOpacity>
-
-              {/* DELETE BUTTON */}
-              <Pressable
-                onPress={() => deleteList(list._id)}
-                hitSlop={12}
-                style={styles.deleteButton}
-              >
-                <Ionicons name="trash" size={20} color="#FF6B6B" />
-              </Pressable>
-            </View>
-          ))
-        )}
-      </View>
-    </ScrollView>
+    <FlatList
+      data={lists}
+      keyExtractor={(item) => item._id}
+      renderItem={renderItem}
+      contentContainerStyle={styles.container}
+      ListEmptyComponent={
+        <View style={styles.empty}>
+          <Text>No lists yet</Text>
+        </View>
+      }
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#FFF8E1",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#FFF8E1",
-  },
-  header: {
-    backgroundColor: "#FF6B35",
-    paddingTop: 50,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    borderBottomWidth: 5,
-    borderBottomColor: "#000",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "black",
-    color: "#000",
-    flex: 1,
-  },
-  createButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "rgba(0,0,0,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#FFF",
-  },
-  listContainer: {
     padding: 20,
+    backgroundColor: "#FFF8E1",
+    flexGrow: 1,
   },
-  emptyContainer: {
+
+  loading: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 60,
   },
-  emptyText: {
-    fontSize: 20,
-    fontWeight: "black",
-    color: "#999",
-    marginTop: 16,
-  },
-  emptySubText: {
-    fontSize: 14,
-    color: "#CCC",
-    marginTop: 8,
-  },
-  listCard: {
+
+  card: {
     backgroundColor: "#FFF",
-    borderRadius: 12,
-    borderWidth: 4,
-    borderColor: "#000",
     padding: 15,
+    borderRadius: 10,
     marginBottom: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    shadowColor: "#000",
-    shadowOffset: { width: 4, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 0,
-    elevation: 5,
+    elevation: 3,
   },
-  listContent: {
-    flex: 1,
+
+  cardContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 15,
-  },
-  listInfo: {
     flex: 1,
   },
-  listName: {
-    fontSize: 18,
-    fontWeight: "black",
-    color: "#000",
-  },
-  listDescription: {
-    fontSize: 12,
-    color: "#999",
-    marginTop: 4,
-  },
-  listCount: {
-    fontSize: 12,
-    color: "#666",
-    marginTop: 4,
+
+  titleText: {
+    fontSize: 16,
     fontWeight: "bold",
   },
+
+  subtitle: {
+    fontSize: 12,
+    color: "#666",
+  },
+
   deleteButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#FFE8E8",
-    justifyContent: "center",
+    backgroundColor: "#FF6B6B",
+    padding: 10,
+    borderRadius: 8,
+  },
+
+  empty: {
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#FF6B6B",
+    marginTop: 50,
   },
 });

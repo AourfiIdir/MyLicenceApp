@@ -29,7 +29,7 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert("Error", "Please enter username and password");
+      Alert.alert("Erreur", "Veuillez saisir le nom d’utilisateur et le mot de passe");
       return;
     }
 
@@ -43,12 +43,12 @@ export default function Login() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Login failed");
+      if (!res.ok) throw new Error(data.message || "Échec de la connexion");
 
-      await login(data.token, data.refreshToken,data.user);
-      Alert.alert("Success", "Logged in");
+      await login(data.token, data.refreshToken, data.user);
+      Alert.alert("Succès", "Connecté");
     } catch (error) {
-      Alert.alert("Login Failed", error.message || "Invalid username or password");
+      Alert.alert("Connexion échouée", error.message || "Nom d’utilisateur ou mot de passe invalide");
     } finally {
       setLoading(false);
     }
@@ -63,13 +63,13 @@ export default function Login() {
         body: JSON.stringify({ idToken }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Google login failed");
+      if (!res.ok) throw new Error(data.message || "Échec de la connexion Google");
 
       await login(data.token);
-      Alert.alert("Success", "Logged in with Google!");
+      Alert.alert("Succès", "Connecté avec Google !");
       router.replace("/");
     } catch (err) {
-      Alert.alert("Google login error", err.message);
+      Alert.alert("Erreur de connexion Google", err.message);
     } finally {
       setLoading(false);
     }
@@ -80,25 +80,25 @@ export default function Login() {
       {/* Comic Header */}
       <View style={styles.header}>
         <View style={styles.comicBurst}>
-          <Text style={styles.burstText}>LOGIN!</Text>
+          <Text style={styles.burstText}>CONNEXION !</Text>
         </View>
         <Ionicons name="log-in-outline" size={60} color="#FFE66D" style={styles.headerIcon} />
-        <Text style={styles.title}>WELCOME BACK</Text>
-        <Text style={styles.subtitle}>HERO</Text>
+        <Text style={styles.title}>BON RETOUR</Text>
+        <Text style={styles.subtitle}>HÉROS</Text>
       </View>
 
       {/* Form Card */}
       <View style={styles.formCard}>
-        <Text style={styles.formTitle}>ENTER THE ARENA</Text>
+        <Text style={styles.formTitle}>ENTRE DANS L’ARÈNE</Text>
 
         <View style={styles.inputWrapper}>
           <View style={styles.inputLabel}>
             <Ionicons name="person" size={16} color="#FF6B35" />
-            <Text style={styles.inputLabelText}>USERNAME</Text>
+            <Text style={styles.inputLabelText}>NOM D’UTILISATEUR</Text>
           </View>
           <TextInput
             style={styles.input}
-            placeholder="Enter username"
+            placeholder="Saisir le nom d’utilisateur"
             placeholderTextColor="#999"
             value={username}
             onChangeText={setUsername}
@@ -109,11 +109,11 @@ export default function Login() {
         <View style={styles.inputWrapper}>
           <View style={styles.inputLabel}>
             <Ionicons name="lock-closed" size={16} color="#FF6B35" />
-            <Text style={styles.inputLabelText}>PASSWORD</Text>
+            <Text style={styles.inputLabelText}>MOT DE PASSE</Text>
           </View>
           <TextInput
             style={styles.input}
-            placeholder="Enter password"
+            placeholder="Saisir le mot de passe"
             placeholderTextColor="#999"
             value={password}
             onChangeText={setPassword}
@@ -128,7 +128,7 @@ export default function Login() {
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? "⚡ LOADING..." : "⚡ LOGIN NOW"}
+            {loading ? "⚡ CHARGEMENT..." : "⚡ SE CONNECTER"}
           </Text>
         </TouchableOpacity>
 
@@ -139,23 +139,24 @@ export default function Login() {
           disabled={loading}
         >
           <Text style={[styles.buttonText, { color: "#FFF" }]}>
-            ⚡ LOGIN WITH GOOGLE
+            ⚡ SE CONNECTER AVEC GOOGLE
           </Text>
         </TouchableOpacity>
       </View>
 
       {/* Sign Up Link */}
       <View style={styles.signUpContainer}>
-        <Text style={styles.signUpText}>NEW HERO? </Text>
+        <Text style={styles.signUpText}>NOUVEAU HÉROS ? </Text>
         <Link href="/(login)/signin" asChild>
           <TouchableOpacity>
-            <Text style={styles.signUpLinkText}>CREATE ACCOUNT</Text>
+            <Text style={styles.signUpLinkText}>CRÉER UN COMPTE</Text>
           </TouchableOpacity>
         </Link>
       </View>
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: { flexGrow: 1, paddingVertical: 40, paddingHorizontal: 20, backgroundColor: "#FFF8E1" },

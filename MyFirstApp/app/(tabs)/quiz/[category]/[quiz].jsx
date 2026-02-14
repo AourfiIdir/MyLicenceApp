@@ -100,16 +100,21 @@ const answer = async (i) => {
 
   const deleteExistingMistake = async (questionText) => {
   try {
-    const response = await fetch(`${API}/mistake/`, {
+    const response = await fetch(`${API}/mistake/deleteByQuestion`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${userToken}`,
         "Content-Type": "application/json",
-      }
+      },
+      body: JSON.stringify({
+        question: questionText,
+        card: cardId
+      })
     });
 
     if (!response.ok) {
       console.log("No existing mistake to delete");
+      console.log(response.message)
     }
   } catch (err) {
     console.error("Error deleting mistake:", err);

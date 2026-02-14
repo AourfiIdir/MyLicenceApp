@@ -139,7 +139,7 @@ export default function MistakesScreen() {
             <Text style={styles.emptyEmoji}>🎉</Text>
             <Text style={styles.emptyTitle}>Aucune erreur!</Text>
             <Text style={styles.emptyText}>
-              Vous avez réussi ce quiz sans faire d'erreurs.
+              Vous avez réussi ce quiz sans faire derreurs.
             </Text>
             <TouchableOpacity
               style={styles.emptyButton}

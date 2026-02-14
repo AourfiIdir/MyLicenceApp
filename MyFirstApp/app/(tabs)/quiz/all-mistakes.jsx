@@ -166,7 +166,7 @@ const onCorrectAnswer = async (mistakeId) => {
             <Text style={styles.emptyEmoji}>🎉</Text>
             <Text style={styles.emptyTitle}>Aucune erreur!</Text>
             <Text style={styles.emptyText}>
-              Vous n'avez fait aucune erreur dans vos quiz. Continuez comme ça!
+              Vous navez fait aucune erreur dans vos quiz. Continuez comme ça!
             </Text>
             <TouchableOpacity
               style={styles.emptyButton}
