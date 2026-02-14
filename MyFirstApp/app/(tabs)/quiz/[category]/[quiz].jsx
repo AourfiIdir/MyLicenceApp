@@ -100,16 +100,12 @@ const answer = async (i) => {
 
   const deleteExistingMistake = async (questionText) => {
   try {
-    const response = await fetch(`${API}/mistake/deleteByQuestion`, {
+    const response = await fetch(`${API}/mistake/`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${userToken}`,
         "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        question: questionText,
-        card: cardId
-      })
+      }
     });
 
     if (!response.ok) {
