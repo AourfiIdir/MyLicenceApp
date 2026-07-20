@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ResultScreen() {
-  const { score, total, mistakes, cardId, category } = useLocalSearchParams();
+  const { score, total, mistakes, cardId } = useLocalSearchParams();
   const router = useRouter();
   
   const scoreNum = parseInt(score);
@@ -118,7 +118,7 @@ export default function ResultScreen() {
 
           <TouchableOpacity
             style={[styles.button, styles.homeButton]}
-            onPress={() => router.push("/(tabs)/quiz/[category]/[quiz]")}
+            onPress={() => router.push("/(tabs)/quiz")}
             activeOpacity={0.7}
           >
             <Ionicons name="home" size={20} color="#000" />

@@ -24,6 +24,7 @@ export default function Lists() {
   useFocusEffect(
     useCallback(() => {
       fetchLists();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userToken])
   );
 

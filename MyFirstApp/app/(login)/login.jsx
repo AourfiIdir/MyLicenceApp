@@ -1,23 +1,29 @@
 import { useState, useEffect } from "react";
-import { useRouter, Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { View, TouchableOpacity, Text, StyleSheet, TextInput, Alert, ScrollView } from "react-native";
 import { useAuth } from "../../contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import * as Google from "expo-auth-session/providers/google";
+import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import { BACKEND_API } from "../../constants/constants";
+
+WebBrowser.maybeCompleteAuthSession();
 const API = BACKEND_API;
+const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 export default function Login() {
-  const router = useRouter();
   const { login } = useAuth();
+  const router = useRouter();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Google login
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: "1016949109257-rt1g0cnoo5q3qilkl2ti10amjne7kp92.apps.googleusercontent.com", // Replace with your Google Web Client ID
+  const redirectUri = AuthSession.makeRedirectUri();
+
+  const [, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: googleClientId,
+    redirectUri,
   });
 
   useEffect(() => {
@@ -25,6 +31,7 @@ export default function Login() {
       const { id_token } = response.params;
       handleGoogleLogin(id_token);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response]);
 
   const handleLogin = async () => {
@@ -63,13 +70,12 @@ export default function Login() {
         body: JSON.stringify({ idToken }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Échec de la connexion Google");
+      if (!res.ok) throw new Error(data.message || "Google login failed");
 
-      await login(data.token);
-      Alert.alert("Succès", "Connecté avec Google !");
-      router.replace("/");
+      await login(data.token, data.refreshToken, data.user);
+      router.replace("/(tabs)");
     } catch (err) {
-      Alert.alert("Erreur de connexion Google", err.message);
+      Alert.alert("Google Login Error", err.message);
     } finally {
       setLoading(false);
     }

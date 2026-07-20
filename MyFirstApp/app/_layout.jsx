@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { useColorScheme } from "react-native";
-import { ActivityIndicator, View } from "react-native";
+import { useColorScheme, ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 function RootLayoutNav() {
@@ -21,6 +20,7 @@ function RootLayoutNav() {
     } else if (userToken && inAuthGroup) {
       router.replace("/(tabs)");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userToken, isLoading, segments]);
 
   if (isLoading) {

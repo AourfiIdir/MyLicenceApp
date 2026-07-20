@@ -12,12 +12,12 @@ export default function AllMistakesScreen() {
   const { userToken, authFetch } = useAuth();
 
   const [mistakes, setMistakes] = useState([]);
-  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchAllMistakes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAllMistakes = async () => {
@@ -38,7 +38,6 @@ export default function AllMistakesScreen() {
       }
       
       const user = await userRes.json();
-      setUserData(user);
 
       if (!user._id) {
         throw new Error('User ID not found');

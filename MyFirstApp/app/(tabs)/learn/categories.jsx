@@ -10,9 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useState, useEffect } from "react";
-import { useAuth,authFetch } from "../../../contexts/AuthContext.jsx";
-import Constants from "expo-constants";
-import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../../contexts/AuthContext.jsx";
 import { categoryImages } from "../../../constants/images.jsx";
 import { BACKEND_API } from "../../../constants/constants.jsx";
 const API = BACKEND_API;
@@ -25,6 +23,7 @@ export default function LearnCategories() {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCategories = async () => {

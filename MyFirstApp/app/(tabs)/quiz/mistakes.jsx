@@ -19,6 +19,7 @@ export default function MistakesScreen() {
 
   useEffect(() => {
     fetchMistakes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardId]);
 
   const fetchMistakes = async () => {

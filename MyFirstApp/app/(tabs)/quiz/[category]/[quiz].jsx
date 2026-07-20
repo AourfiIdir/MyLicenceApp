@@ -4,14 +4,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "../../../../contexts/AuthContext";
 
 import { Ionicons } from "@expo/vector-icons";
-import Card from "../../../../components/Card.jsx"
 import { BACKEND_API } from "../../../../constants/constants.jsx";
 const API = BACKEND_API;
 
 
 
 export default function QuizScreen() {
-  const { quiz: cardId, category } = useLocalSearchParams();
+  const { quiz: cardId } = useLocalSearchParams();
   const router = useRouter();
   const { userToken } = useAuth();
 
@@ -24,6 +23,7 @@ export default function QuizScreen() {
 
   useEffect(() => {
     fetchQuiz();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardId]);
 
   const fetchQuiz = async () => {

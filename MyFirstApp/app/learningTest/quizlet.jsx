@@ -10,7 +10,6 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Constants from "expo-constants";
 import { useAuth } from "../../contexts/AuthContext";
 import { BACKEND_API } from "../../constants/constants";
 const { width } = Dimensions.get("window");
@@ -220,7 +219,7 @@ export default function QuizletTest() {
         </Animated.View>
       </GestureDetector>
 
-      <Text style={styles.hint}>👈 Dont know · Tap · Know 👉</Text>
+      <Text style={styles.hint}>{"👈 Don't know · Tap · Know 👉"}</Text>
     </View>
   );
 }

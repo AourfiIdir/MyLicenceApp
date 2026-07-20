@@ -19,7 +19,7 @@ const API = BACKEND_API;
 
 export default function CardDetail() {
   const router = useRouter();
-  const { cardId, category } = useLocalSearchParams();
+  const { cardId } = useLocalSearchParams();
   const { userToken, authFetch } = useAuth();
   const [card, setCard] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,10 +32,12 @@ export default function CardDetail() {
 
   useEffect(() => {
     fetchCard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardId]);
 
   /*to complete ----------------------------*/
-  const renderCardContent = () => {
+  // eslint-disable-next-line no-unused-vars
+  const _renderCardContent = () => {
     const first_category = card.category.split("-")[0];
     const second_category = card.category.split("-")[1];
     if (first_category === "learning") {

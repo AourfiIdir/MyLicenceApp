@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'expo-router';
-import Constants from 'expo-constants';
 import { Ionicons } from '@expo/vector-icons';
 import { BACKEND_API } from '../../constants/constants';
 const API = BACKEND_API;
@@ -17,6 +16,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchProfileData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchProfileData = async () => {

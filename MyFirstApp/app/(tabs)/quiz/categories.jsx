@@ -3,7 +3,6 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   ActivityIndicator,
   Alert,
@@ -21,10 +20,10 @@ export default function Quiz() {
   const { userToken } = useAuth();
   const [loading, setLoading] = useState(true);
   const [quizCategories, setQuizCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     fetchQuizCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchQuizCategories = async () => {

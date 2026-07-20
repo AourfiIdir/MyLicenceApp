@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import * as Google from "expo-auth-session/providers/google";
+import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import {
   View,
@@ -14,10 +15,10 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import {useAuth} from "../../contexts/AuthContext"
 import { BACKEND_API } from "../../constants/constants";
-WebBrowser.maybeCompleteAuthSession(); // Required for Google Auth
-//const { googleWebClientId } = Constants.expoConfig.extra;
+WebBrowser.maybeCompleteAuthSession();
 
 const API = BACKEND_API;
+const googleClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
 const initialForm = {
   nom: "",
   prenom: "",
@@ -127,15 +128,19 @@ export default function SignIn() {
   };
 
   // ======== GOOGLE LOGIN ========
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    webClientId: "1016949109257-rt1g0cnoo5q3qilkl2ti10amjne7kp92.apps.googleusercontent.com", // Replace with your Google Web Client ID
+  const redirectUri = AuthSession.makeRedirectUri();
+
+  const [, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: googleClientId,
+    redirectUri,
   });
 
   useEffect(() => {
     if (response?.type === "success") {
       const { id_token } = response.params;
-      handleGoogleLogin(id_token);
+      handleGoogleLogin(id_token, true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [response]);
 
   const handleGoogleLogin = async (idToken, isSignup = false) => {
@@ -148,14 +153,14 @@ export default function SignIn() {
     });
 
     const data = await res.json();
-    if (!res.ok || !data.ok) throw new Error(data.message || "Connexion Google échouée");
+    if (!res.ok || !data.success) throw new Error(data.message || "Connexion Google échouée");
 
     // Save token in AuthContext
     await login(data.token,data.refreshToken ,data.user);
     console.log("Google login success:", data.user);
 
     Alert.alert("Succès", isSignup ? "Inscription avec Google réussie !" : "Connexion avec Google réussie !");
-    router.replace("/"); 
+    router.replace("/(tabs)");
   } catch (err) {
     Alert.alert("Erreur de connexion Google", err.message);
   } finally {
@@ -183,7 +188,7 @@ export default function SignIn() {
           <>
             <Text style={styles.formTitle}>INFOS DU HÉROS</Text>
 
-            {/* FIRST NAME */}
+            {/* FIRST NAME (prenom) */}
             <View style={styles.inputWrapper}>
               <View style={styles.inputLabel}>
                 <Ionicons name="person" size={16} color="#FF6B35" />
@@ -192,13 +197,13 @@ export default function SignIn() {
               <TextInput
                 style={styles.input}
                 placeholder="Prénom"
-                value={form.nom}
-                onChangeText={(v) => setField("nom", v)}
+                value={form.prenom}
+                onChangeText={(v) => setField("prenom", v)}
                 placeholderTextColor="#999"
               />
             </View>
 
-            {/* LAST NAME */}
+            {/* LAST NAME (nom) */}
             <View style={styles.inputWrapper}>
               <View style={styles.inputLabel}>
                 <Ionicons name="person" size={16} color="#FF6B35" />
@@ -207,8 +212,8 @@ export default function SignIn() {
               <TextInput
                 style={styles.input}
                 placeholder="Nom"
-                value={form.prenom}
-                onChangeText={(v) => setField("prenom", v)}
+                value={form.nom}
+                onChangeText={(v) => setField("nom", v)}
                 placeholderTextColor="#999"
               />
             </View>

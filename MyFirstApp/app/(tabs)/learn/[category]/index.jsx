@@ -18,7 +18,7 @@ const API = BACKEND_API;
 export default function CategoryCards() {
   const router = useRouter();
   const { category } = useLocalSearchParams();
-  const { userToken, userId, authFetch } = useAuth();
+  const { userToken, authFetch } = useAuth();
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [completedCards, setCompletedCards] = useState({});
@@ -26,12 +26,14 @@ export default function CategoryCards() {
   // Initial fetch on mount
   useEffect(() => {
     fetchCards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category]);
 
   // Refetch when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
       fetchCards();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [category, userToken])
   );
 

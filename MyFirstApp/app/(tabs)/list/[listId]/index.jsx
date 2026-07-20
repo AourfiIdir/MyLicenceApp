@@ -12,7 +12,6 @@ import {
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { useState, useCallback } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
-import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 import { BACKEND_API } from "../../../../constants/constants";
 const API = BACKEND_API;
@@ -35,6 +34,7 @@ export default function ListDetail() {
   useFocusEffect(
     useCallback(() => {
       fetchList();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [listId])
   );
 

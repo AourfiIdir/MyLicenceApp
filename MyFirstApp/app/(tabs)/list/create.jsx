@@ -11,7 +11,6 @@ import {
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
-import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 import { BACKEND_API } from "../../../constants/constants";
 
@@ -54,7 +53,7 @@ export default function CreateList() {
       }
 
       // ...existing code...
-      const newList = await res.json();
+      await res.json();
       Alert.alert("Success", "List created! 🎉");
       router.push("/list/lists"); // Changed from router.push(`/list/${newList._id}`);
       // ...existing code...
